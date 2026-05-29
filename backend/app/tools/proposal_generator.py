@@ -174,8 +174,8 @@ Kebutuhan tambahan: {requirements_text or "(tidak ada)"}
 
 TUGAS:
 - Tulis section 1 (Executive Summary), 2 (Technical Overview), 4 (SOW), 5 (Kesimpulan)
-- UNTUK SECTION 3 (BOM), TULISKAN PERSIS: <!--BOM-->
-- JANGAN TULIS TABEL BOM SENDIRI. GUNAKAN <!--BOM--> SAJA SEBAGAI TEMPAT TABEL.
+- UNTUK SECTION 3 (Recommended Bill of Materials/BOM), TULIS PERSIS: <!--BOM-->
+- JANGAN TULIS TABEL ATAU KONTEN APAPUN DI BAGIAN BOM. CUKUP TULIS <!--BOM-->
 
 Gunakan bahasa Indonesia formal."""
 
@@ -202,7 +202,18 @@ Gunakan bahasa Indonesia formal."""
             resp.raise_for_status()
             data = resp.json()
             content = data["choices"][0]["message"]["content"] or ""
-            content = content.replace("<!--BOM-->", bom_markdown_text)
+            if "<!--BOM-->" in content:
+                content = content.replace("<!--BOM-->", bom_markdown_text)
+            lines = content.split("\n")
+            seen_sep = False
+            clean = []
+            for line in lines:
+                if line.strip().startswith("|---"):
+                    if seen_sep:
+                        continue
+                    seen_sep = True
+                clean.append(line)
+            content = "\n".join(clean)
 
             return {
                 "proposal_markdown": content,
