@@ -1,4 +1,3 @@
 {
-  "framework": "nextjs",
-  "maxDuration": 30
+  "framework": "nextjs"
 }
