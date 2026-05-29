@@ -77,10 +77,24 @@ async def lookup_products_fn(
                     filtered.append(p)
         products = filtered
 
+    sanitized = []
+    for p in products:
+        entry = {}
+        for k, v in p.items():
+            if k in ("harga_md", "harga_non_md", "harga_online"):
+                continue
+            if k == "harga_msrp":
+                entry["harga"] = v
+            elif k == "harga_estimasi":
+                entry["harga"] = v
+            else:
+                entry[k] = v
+        sanitized.append(entry)
+
     return {
         "category": category,
-        "count": len(products),
-        "products": products,
+        "count": len(sanitized),
+        "products": sanitized,
     }
 
 
@@ -92,7 +106,7 @@ product_lookup_tool = Tool(
         "properties": {
             "category": {
                 "type": "string",
-                "description": "Kategori produk. Pilihan: cameras, nvr, poe_switches, hdd. Untuk Hiview, data sudah termasuk harga (harga_md, harga_non_md, harga_online, harga_msrp).",
+                "description": "Kategori produk. Pilihan: cameras, nvr, poe_switches, hdd. Hasil mencakup harga MSRP (field: harga).",
                 "enum": ["cameras", "nvr", "poe_switches", "hdd"],
             },
             "brand": {
