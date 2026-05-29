@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: ai-assistant-adi-backend
+    env: python
+    region: singapore
+    plan: free
+    sourceDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODEL
+        value: google/gemini-2.0-flash-001
+      - key: DATABASE_URL
+        value: sqlite:///./adi.db
+      - key: CORS_ORIGINS
+        value: '["https://frontend-zeta-navy-55.vercel.app"]'
+      - key: PYTHON_VERSION
+        value: 3.12.0
