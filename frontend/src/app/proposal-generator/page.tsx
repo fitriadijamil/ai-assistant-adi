@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { generateProposal, ProposalResponse } from "@/lib/api";
 
@@ -31,6 +31,7 @@ const BRANDS = [
 ];
 
 export default function ProposalGeneratorPage() {
+  const previewRef = useRef<HTMLDivElement>(null);
   const [clientName, setClientName] = useState("");
   const [projectType, setProjectType] = useState("");
   const [location, setLocation] = useState("");
@@ -74,7 +75,29 @@ export default function ProposalGeneratorPage() {
     }
   };
 
+  const handleDownloadPDF = () => {
+    window.print();
+  };
+
   return (
+    <>
+    <style>{`
+      @media print {
+        body { font-size: 12pt; color: #000; background: #fff; }
+        .drawer, .navbar, .btn, .card form, .card-title .btn { display: none !important; }
+        .card { box-shadow: none !important; border: 1px solid #ddd; break-inside: avoid; page-break-inside: avoid; }
+        .proposal-markdown h1 { font-size: 18pt; margin-top: 20px; }
+        .proposal-markdown h2 { font-size: 14pt; margin-top: 16px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+        .proposal-markdown h3 { font-size: 12pt; margin-top: 12px; }
+        .proposal-markdown table { border-collapse: collapse; width: 100%; font-size: 10pt; }
+        .proposal-markdown th, .proposal-markdown td { border: 1px solid #333; padding: 6px 8px; text-align: left; }
+        .proposal-markdown th { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .proposal-markdown p { margin: 6px 0; line-height: 1.5; }
+        .max-h-\\[70vh\\] { max-height: none !important; overflow: visible !important; }
+        .print-stat { background: #f5f5f5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        @page { margin: 20mm; }
+      }
+    `}</style>
     <div className="max-w-5xl mx-auto p-4 md:p-8">
       <header className="mb-8">
         <h1 className="text-3xl font-bold">Proposal Generator</h1>
@@ -217,12 +240,20 @@ export default function ProposalGeneratorPage() {
 
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
+            <div className="flex items-center justify-between">
             <h2 className="card-title">Proposal Preview</h2>
+            {result && (
+              <button className="btn btn-outline btn-sm" onClick={handleDownloadPDF}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                Download PDF
+              </button>
+            )}
+          </div>
 
             {result ? (
-              <div className="overflow-y-auto max-h-[70vh]">
+              <div ref={previewRef} className="overflow-y-auto max-h-[70vh] proposal-content">
                 {result.storage_summary && (
-                  <div className="grid grid-cols-2 gap-2 mb-4 p-3 bg-base-200 rounded-box">
+                  <div className="grid grid-cols-2 gap-2 mb-4 p-3 bg-base-200 rounded-box print-stat">
                     <div className="stat p-1 min-h-0">
                       <div className="stat-title text-xs">Storage/Day</div>
                       <div className="stat-value text-lg">
@@ -238,12 +269,12 @@ export default function ProposalGeneratorPage() {
                   </div>
                 )}
 
-                <div className="prose prose-sm max-w-none">
+                <div className="prose prose-sm max-w-none proposal-markdown">
                   <ReactMarkdown
                     components={{
                       table: ({ children }) => (
                         <div className="overflow-x-auto">
-                          <table className="table table-sm table-zebra">
+                          <table className="table table-sm table-zebra proposal-table">
                             {children}
                           </table>
                         </div>
@@ -266,5 +297,6 @@ export default function ProposalGeneratorPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
