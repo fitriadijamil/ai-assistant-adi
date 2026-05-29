@@ -1,0 +1,111 @@
+[
+  {
+    "id": "hik-ds3e0505p",
+    "nama": "DS-3E0505P-E",
+    "brand": "Hikvision",
+    "port": 5,
+    "port_poe": 4,
+    "tipe": "Unmanaged",
+    "poe_standard": "802.3af/at",
+    "power_budget_watt": 60,
+    "gigabit": true,
+    "harga_estimasi": 500000
+  },
+  {
+    "id": "hik-ds3e0508p",
+    "nama": "DS-3E0508P-E",
+    "brand": "Hikvision",
+    "port": 8,
+    "port_poe": 8,
+    "tipe": "Unmanaged",
+    "poe_standard": "802.3af/at",
+    "power_budget_watt": 120,
+    "gigabit": true,
+    "harga_estimasi": 900000
+  },
+  {
+    "id": "hik-ds3e1510p",
+    "nama": "DS-3E1510P-SI",
+    "brand": "Hikvision",
+    "port": 10,
+    "port_poe": 8,
+    "tipe": "Managed",
+    "poe_standard": "802.3af/at",
+    "power_budget_watt": 240,
+    "gigabit": true,
+    "fitur": ["VLAN", "SNMP", "QoS", "PoE schedule"],
+    "harga_estimasi": 2200000
+  },
+  {
+    "id": "dah-dhi-pfs3005",
+    "nama": "DHI-PFS3005-4P-60",
+    "brand": "Dahua",
+    "port": 5,
+    "port_poe": 4,
+    "tipe": "Unmanaged",
+    "poe_standard": "802.3af/at",
+    "power_budget_watt": 60,
+    "gigabit": true,
+    "harga_estimasi": 500000
+  },
+  {
+    "id": "dah-dhi-pfs3009",
+    "nama": "DHI-PFS3009-8P-150",
+    "brand": "Dahua",
+    "port": 9,
+    "port_poe": 8,
+    "tipe": "Unmanaged",
+    "poe_standard": "802.3af/at",
+    "power_budget_watt": 150,
+    "gigabit": true,
+    "harga_estimasi": 1100000
+  },
+  {
+    "id": "dah-dhi-pfs3016",
+    "nama": "DHI-PFS3016-16P-240",
+    "brand": "Dahua",
+    "port": 16,
+    "port_poe": 16,
+    "tipe": "Unmanaged",
+    "poe_standard": "802.3af/at",
+    "power_budget_watt": 240,
+    "gigabit": true,
+    "harga_estimasi": 2500000
+  },
+  {
+    "id": "tpl-tl-sg1005p",
+    "nama": "TL-SG1005P",
+    "brand": "TP-Link Tapo",
+    "port": 5,
+    "port_poe": 4,
+    "tipe": "Unmanaged",
+    "poe_standard": "802.3af/at",
+    "power_budget_watt": 56,
+    "gigabit": true,
+    "harga_estimasi": 450000
+  },
+  {
+    "id": "tpl-tl-sg1008mp",
+    "nama": "TL-SG1008MP",
+    "brand": "TP-Link Tapo",
+    "port": 8,
+    "port_poe": 8,
+    "tipe": "Unmanaged",
+    "poe_standard": "802.3af/at",
+    "power_budget_watt": 126,
+    "gigabit": true,
+    "harga_estimasi": 1200000
+  },
+  {
+    "id": "uni-sw1008p",
+    "nama": "SW1008P",
+    "brand": "Uniview",
+    "port": 8,
+    "port_poe": 8,
+    "tipe": "Unmanaged",
+    "poe_standard": "802.3af/at",
+    "power_budget_watt": 120,
+    "gigabit": true,
+    "harga_estimasi": 950000
+  }
+]

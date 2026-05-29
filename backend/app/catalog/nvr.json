@@ -1,0 +1,101 @@
+[
+  {
+    "id": "hik-ds7608niq2",
+    "nama": "DS-7608NXI-I2/S",
+    "brand": "Hikvision",
+    "channel": 8,
+    "max_resolusi": "8MP",
+    "max_hdd_tb": 10,
+    "poe_builtin": false,
+    "tipe": "AI NVR",
+    "fitur": ["AcuSense", "H.265+", "HDMI/VGA", "up to 80Mbps incoming"],
+    "harga_estimasi": 4000000
+  },
+  {
+    "id": "hik-ds7616niq2",
+    "nama": "DS-7616NXI-I2/S",
+    "brand": "Hikvision",
+    "channel": 16,
+    "max_resolusi": "8MP",
+    "max_hdd_tb": 10,
+    "poe_builtin": false,
+    "tipe": "AI NVR",
+    "fitur": ["AcuSense", "H.265+", "HDMI/VGA", "up to 160Mbps incoming"],
+    "harga_estimasi": 6000000
+  },
+  {
+    "id": "hik-ds7108hgh",
+    "nama": "DS-7108HGHI-M1",
+    "brand": "Hikvision",
+    "channel": 8,
+    "max_resolusi": "5MP",
+    "max_hdd_tb": 6,
+    "poe_builtin": false,
+    "tipe": "DVR",
+    "fitur": ["HD-TVI", "H.265", "entry level", "HDMI/VGA"],
+    "harga_estimasi": 1500000
+  },
+  {
+    "id": "dah-dhi-nvr2108",
+    "nama": "DHI-NVR2108HS-8P-S2",
+    "brand": "Dahua",
+    "channel": 8,
+    "max_resolusi": "8MP",
+    "max_hdd_tb": 10,
+    "poe_builtin": true,
+    "poe_budget_watt": 80,
+    "tipe": "NVR PoE",
+    "fitur": ["H.265+", "built-in PoE", "HDMI/VGA", "AI by camera"],
+    "harga_estimasi": 3500000
+  },
+  {
+    "id": "dah-dhi-nvr2116",
+    "nama": "DHI-NVR2116HS-16P-S2",
+    "brand": "Dahua",
+    "channel": 16,
+    "max_resolusi": "8MP",
+    "max_hdd_tb": 10,
+    "poe_builtin": true,
+    "poe_budget_watt": 150,
+    "tipe": "NVR PoE",
+    "fitur": ["H.265+", "built-in PoE 16 port", "HDMI/VGA", "AI by camera"],
+    "harga_estimasi": 5500000
+  },
+  {
+    "id": "dah-dhi-nvr4104",
+    "nama": "DHI-NVR4104HS-P-4KS2",
+    "brand": "Dahua",
+    "channel": 4,
+    "max_resolusi": "8MP",
+    "max_hdd_tb": 6,
+    "poe_builtin": true,
+    "poe_budget_watt": 50,
+    "tipe": "NVR PoE",
+    "fitur": ["H.265+", "4 port PoE", "HDMI/VGA", "compact"],
+    "harga_estimasi": 2000000
+  },
+  {
+    "id": "uni-nvr302",
+    "nama": "NVR302-16S2",
+    "brand": "Uniview",
+    "channel": 16,
+    "max_resolusi": "8MP",
+    "max_hdd_tb": 10,
+    "poe_builtin": false,
+    "tipe": "NVR",
+    "fitur": ["H.265+", "HDMI", "dual HDD bay", "RAID"],
+    "harga_estimasi": 5000000
+  },
+  {
+    "id": "uni-nvr102",
+    "nama": "NVR102-08S2",
+    "brand": "Uniview",
+    "channel": 8,
+    "max_resolusi": "8MP",
+    "max_hdd_tb": 8,
+    "poe_builtin": false,
+    "tipe": "NVR",
+    "fitur": ["H.265+", "HDMI", "single HDD"],
+    "harga_estimasi": 2800000
+  }
+]
