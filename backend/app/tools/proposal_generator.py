@@ -138,10 +138,13 @@ async def generate_proposal(
 
     total_bom = sum(item["subtotal"] for item in bom_items)
 
-    bom_markdown_table = "| No | Deskripsi Produk | Qty | Harga Satuan (IDR) | Subtotal (IDR) |\n"
-    bom_markdown_table += "|---|-----------------|-----|-------------------|----------------|\n"
-    for i in bom_items:
-        bom_markdown_table += f"| {i['no']} | {i['deskripsi']} | {i['qty']} | {fmt_price(i['harga'])} | {fmt_price(i['subtotal'])} |\n"
+    bom_markdown_text = f"""### Recommended Bill of Materials (BOM)
+
+| No | Deskripsi Produk | Qty | Harga Satuan (IDR) | Subtotal (IDR) |
+|---|-----------------|-----|-------------------|----------------|
+{chr(10).join(f"| {i['no']} | {i['deskripsi']} | {i['qty']} | {fmt_price(i['harga'])} | {fmt_price(i['subtotal'])} |" for i in bom_items)}
+
+**TOTAL: Rp {fmt_price(total_bom)}**"""
 
     user_prompt = f"""Buatkan proposal teknis untuk proyek CCTV dengan format markdown.
 
@@ -171,13 +174,10 @@ Kebutuhan tambahan: {requirements_text or "(tidak ada)"}
 
 TUGAS:
 - Tulis section 1 (Executive Summary), 2 (Technical Overview), 4 (SOW), 5 (Kesimpulan)
-- UNTUK SECTION 3 (BOM), COPY TABLE DI BAWAH INI PERSIS. JANGAN DIUBAH.
+- UNTUK SECTION 3 (BOM), TULISKAN PERSIS: <!--BOM-->
+- JANGAN TULIS TABEL BOM SENDIRI. GUNAKAN <!--BOM--> SAJA SEBAGAI TEMPAT TABEL.
 
-BOM TABLE (copy this exactly into section 3):
-{bom_markdown_table}
-**TOTAL: Rp {fmt_price(total_bom)}**
-
-Gunakan bahasa Indonesia formal. Harga dalam Rupiah."""
+Gunakan bahasa Indonesia formal."""
 
     headers = {
         "Authorization": f"Bearer {settings.openrouter_api_key}",
@@ -202,6 +202,7 @@ Gunakan bahasa Indonesia formal. Harga dalam Rupiah."""
             resp.raise_for_status()
             data = resp.json()
             content = data["choices"][0]["message"]["content"] or ""
+            content = content.replace("<!--BOM-->", bom_markdown_text)
 
             return {
                 "proposal_markdown": content,
