@@ -65,10 +65,68 @@ async def generate_proposal(
         simultaneous_streams=1,
     )
 
+    def fmt_price(val):
+        if not val: return "0"
+        return f"{val:,}".replace(",", ".")
+
     camera_products = await lookup_products_fn(category="cameras", keyword=resolution, brand=brand or None)
     hdd_products = await lookup_products_fn(category="hdd")
+    nvr_products = await lookup_products_fn(category="nvr", brand=brand or None)
+    poe_products = await lookup_products_fn(category="poe_switches")
 
-    user_prompt = f"""Buatkan proposal teknis untuk proyek CCTV dengan data berikut:
+    recommended_hdd_tb = storage_result.get('recommended_hdd_tb', 0)
+    rec_hdd_count = max(1, round(recommended_hdd_tb / 8)) if recommended_hdd_tb else 1
+
+    best_camera = (camera_products.get("products") or [None])[0]
+    best_nvr = (nvr_products.get("products") or [None])[0]
+    best_hdd = (hdd_products.get("products") or [None])[0]
+    best_poe = (poe_products.get("products") or [None])[0]
+
+    bom_items = []
+
+    if best_camera:
+        camera_price = best_camera.get("harga", 0) or 0
+        bom_items.append({
+            "no": 1, "deskripsi": f"Kamera {best_camera.get('nama', 'CCTV')} - {best_camera.get('resolusi', resolution)} ({best_camera.get('jenis', '')})",
+            "qty": camera_count, "harga": camera_price, "subtotal": camera_count * camera_price
+        })
+
+    if best_nvr:
+        nvr_price = best_nvr.get("harga", 0) or 0
+        ch = best_nvr.get("channel", 0)
+        if ch == 0 or ch >= camera_count:
+            bom_items.append({
+                "no": 2, "deskripsi": f"NVR {best_nvr.get('nama', '')} - {best_nvr.get('channel', '?')} Channel",
+                "qty": 1, "harga": nvr_price, "subtotal": nvr_price
+            })
+
+    if best_hdd:
+        hdd_price = best_hdd.get("harga_estimasi", 0) or 0
+        hdd_cap = best_hdd.get("kapasitas_tb", 8)
+        hdd_count = max(1, round(recommended_hdd_tb / hdd_cap)) if recommended_hdd_tb else 1
+        bom_items.append({
+            "no": 3, "deskripsi": f"HDD {best_hdd.get('nama', 'Surveillance HDD')} - {hdd_cap}TB",
+            "qty": hdd_count, "harga": hdd_price, "subtotal": hdd_count * hdd_price
+        })
+
+    if best_poe:
+        poe_price = best_poe.get("harga_estimasi", 0) or 0
+        bom_items.append({
+            "no": 4, "deskripsi": f"PoE Switch {best_poe.get('nama', '')} - {best_poe.get('port_count', '?')} Port",
+            "qty": 1, "harga": poe_price, "subtotal": poe_price
+        })
+
+    bom_kabel_price = 300000
+    bom_items.append({
+        "no": 5, "deskripsi": "Kabel UTP Cat6 + Konektor RJ45 + Accessories",
+        "qty": 1, "harga": bom_kabel_price, "subtotal": bom_kabel_price
+    })
+
+    total_bom = sum(item["subtotal"] for item in bom_items)
+
+    user_prompt = f"""Buatkan proposal teknis untuk proyek CCTV dengan data berikut.
+
+TULISKAN TABEL BOM MENGGUNAKAN DATA PRE-COMPUTED DI BAWAH INI. GUNAKAN HARGA DAN SUBTOTAL YANG SUDAH DIHITUNG, JANGAN TULIS "TBD" ATAU "ESTIMASI".
 
 ## Data Klien
 - Nama Klien: {client_name}
@@ -93,17 +151,19 @@ async def generate_proposal(
 - Total bandwidth: {bandwidth_result['total_bandwidth_mbps']} Mbps
 - Rekomendasi switch: {bandwidth_result['recommendation']}
 
-## Katalog Produk Tersedia
-### Kamera ({resolution})
-{json.dumps(camera_products.get('products', [])[:5], indent=2, ensure_ascii=False)}
+## BILL OF MATERIALS (PRE-COMPUTED — WAJIB GUNAKAN DATA INI)
+Tabel berikut sudah dihitung. TULISKAN PERSIS di bagian BOM proposal dengan format markdown table.
 
-### HDD Surveillance
-{json.dumps(hdd_products.get('products', [])[:5], indent=2, ensure_ascii=False)}
+| No | Deskripsi Produk | Qty | Harga Satuan (IDR) | Subtotal (IDR) |
+|----|-----------------|-----|-------------------|----------------|
+{chr(10).join(f"| {i['no']} | {i['deskripsi']} | {i['qty']} | {fmt_price(i['harga'])} | {fmt_price(i['subtotal'])} |" for i in bom_items)}
+
+**TOTAL:** Rp {fmt_price(total_bom)}
 
 ## Produk yang Dipilih Langsung oleh User
 {json.dumps(selected_products, indent=2, ensure_ascii=False) if selected_products else "(belum ada produk spesifik yang dipilih)"}
 
-Susun proposal profesional berdasarkan data di atas."""
+Susun proposal profesional. GUNAKAN HARGA BOM DI ATAS — JANGAN MENGUBAH ATAU TULIS TBD."""
 
     headers = {
         "Authorization": f"Bearer {settings.openrouter_api_key}",
