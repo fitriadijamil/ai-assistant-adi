@@ -1,5 +1,6 @@
 import json
 import logging
+import math
 
 import httpx
 
@@ -75,11 +76,25 @@ async def generate_proposal(
     poe_products = await lookup_products_fn(category="poe_switches")
 
     recommended_hdd_tb = storage_result.get('recommended_hdd_tb', 0)
-    rec_hdd_count = max(1, round(recommended_hdd_tb / 8)) if recommended_hdd_tb else 1
 
     best_camera = (camera_products.get("products") or [None])[0]
     best_nvr = (nvr_products.get("products") or [None])[0]
-    best_hdd = (hdd_products.get("products") or [None])[0]
+
+    all_hdd = hdd_products.get("products") or []
+    all_hdd.sort(key=lambda x: x.get("kapasitas_tb", 0), reverse=True)
+    best_hdd = None
+    hdd_count = 1
+    if all_hdd and recommended_hdd_tb:
+        for h in all_hdd:
+            cap = h.get("kapasitas_tb", 0)
+            if cap > 0:
+                count = math.ceil(recommended_hdd_tb / cap)
+                best_hdd = h
+                hdd_count = count
+                break
+    if not best_hdd and all_hdd:
+        best_hdd = all_hdd[0]
+
     best_poe = (poe_products.get("products") or [None])[0]
 
     bom_items = []
@@ -101,9 +116,8 @@ async def generate_proposal(
             })
 
     if best_hdd:
-        hdd_price = best_hdd.get("harga_estimasi", 0) or 0
+        hdd_price = best_hdd.get("harga", 0) or 0
         hdd_cap = best_hdd.get("kapasitas_tb", 8)
-        hdd_count = max(1, round(recommended_hdd_tb / hdd_cap)) if recommended_hdd_tb else 1
         bom_items.append({
             "no": 3, "deskripsi": f"HDD {best_hdd.get('nama', 'Surveillance HDD')} - {hdd_cap}TB",
             "qty": hdd_count, "harga": hdd_price, "subtotal": hdd_count * hdd_price
@@ -112,7 +126,7 @@ async def generate_proposal(
     if best_poe:
         poe_price = best_poe.get("harga", 0) or best_poe.get("harga_estimasi", 0) or 0
         bom_items.append({
-            "no": 4, "deskripsi": f"PoE Switch {best_poe.get('nama', '')} - {best_poe.get('port_count', '?')} Port",
+            "no": 4,             "deskripsi": f"PoE Switch {best_poe.get('nama', '')} - {best_poe.get('port', '?')} Port",
             "qty": 1, "harga": poe_price, "subtotal": poe_price
         })
 

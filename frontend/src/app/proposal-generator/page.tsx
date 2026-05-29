@@ -82,6 +82,11 @@ export default function ProposalGeneratorPage() {
   return (
     <>
     <style>{`
+      .proposal-markdown table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+      .proposal-markdown th { background: #e5e7eb; font-weight: 600; }
+      .proposal-markdown th, .proposal-markdown td { border: 1px solid #d1d5db; padding: 6px 10px; text-align: left; }
+      .proposal-markdown tr:nth-child(even) td { background: #f9fafb; }
+
       @media print {
         html, body { font-size: 12pt; color: #000; background: #fff !important; width: 100%; }
         .drawer-side, .navbar, .btn, .card form, .card-title .btn, header .btn { display: none !important; }
@@ -284,7 +289,7 @@ export default function ProposalGeneratorPage() {
                     components={{
                       table: ({ children }) => (
                         <div className="overflow-x-auto">
-                          <table className="table table-sm table-zebra proposal-table">
+                          <table className="table table-sm proposal-table">
                             {children}
                           </table>
                         </div>
