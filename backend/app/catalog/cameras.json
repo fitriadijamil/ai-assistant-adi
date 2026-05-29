@@ -226,17 +226,5 @@
     "bitrate_default_bps": 6000000,
     "fitur": ["WiFi", "night vision", "IP66", "microSD up to 256GB"],
     "harga_estimasi": 500000
-  },
-  {
-    "id": "hiw-hv40",
-    "nama": "Hiview HV40",
-    "brand": "Hiview",
-    "tipe": "IP",
-    "jenis": "Bullet",
-    "resolusi": "4MP",
-    "poe": true,
-    "bitrate_default_bps": 6000000,
-    "fitur": ["H.265+", "night vision 25m", "IP67"],
-    "harga_estimasi": 850000
   }
 ]
