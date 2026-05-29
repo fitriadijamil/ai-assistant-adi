@@ -83,19 +83,29 @@ export default function ProposalGeneratorPage() {
     <>
     <style>{`
       @media print {
-        body { font-size: 12pt; color: #000; background: #fff; }
-        .drawer, .navbar, .btn, .card form, .card-title .btn { display: none !important; }
-        .card { box-shadow: none !important; border: 1px solid #ddd; break-inside: avoid; page-break-inside: avoid; }
-        .proposal-markdown h1 { font-size: 18pt; margin-top: 20px; }
-        .proposal-markdown h2 { font-size: 14pt; margin-top: 16px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
-        .proposal-markdown h3 { font-size: 12pt; margin-top: 12px; }
-        .proposal-markdown table { border-collapse: collapse; width: 100%; font-size: 10pt; }
-        .proposal-markdown th, .proposal-markdown td { border: 1px solid #333; padding: 6px 8px; text-align: left; }
-        .proposal-markdown th { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .proposal-markdown p { margin: 6px 0; line-height: 1.5; }
+        html, body { font-size: 12pt; color: #000; background: #fff !important; width: 100%; }
+        .drawer-side, .navbar, .btn, .card form, .card-title .btn, header .btn { display: none !important; }
+        .drawer { display: block !important; }
+        .drawer-content { display: block !important; margin: 0 !important; padding: 0 !important; }
+        .drawer-content > .flex-col > main { padding: 0 !important; margin: 0 !important; }
+        .grid { display: block !important; }
+        .lg\\:grid-cols-2 > div:first-child { display: none !important; }
+        .lg\\:grid-cols-2 > div:last-child { display: block !important; max-width: 100% !important; }
+        .card { box-shadow: none !important; border: none !important; }
+        .card-body { padding: 0 !important; }
         .max-h-\\[70vh\\] { max-height: none !important; overflow: visible !important; }
-        .print-stat { background: #f5f5f5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        @page { margin: 20mm; }
+        .proposal-markdown h1 { font-size: 18pt; margin-top: 24px; margin-bottom: 8px; }
+        .proposal-markdown h2 { font-size: 14pt; margin-top: 20px; margin-bottom: 6px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+        .proposal-markdown h3 { font-size: 12pt; margin-top: 14px; }
+        .proposal-markdown p, .proposal-markdown li { margin: 4px 0; line-height: 1.6; }
+        .proposal-markdown table { border-collapse: collapse; width: 100%; font-size: 10pt; margin: 8px 0; }
+        .proposal-markdown th, .proposal-markdown td { border: 1px solid #333; padding: 5px 8px; text-align: left; }
+        .proposal-markdown th { background: #e0e0e0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-weight: bold; }
+        .proposal-markdown tr:nth-child(even) td { background: #f5f5f5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .print-stat { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .stat, .stat-title, .stat-value { padding: 2px 4px !important; }
+        .overflow-x-auto { overflow: visible !important; }
+        @page { margin: 15mm 20mm; }
       }
     `}</style>
     <div className="max-w-5xl mx-auto p-4 md:p-8">
