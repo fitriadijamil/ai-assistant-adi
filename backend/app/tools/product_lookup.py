@@ -66,22 +66,15 @@ async def lookup_products_fn(
     if keyword:
         kw = keyword.lower()
         filtered = []
+        search_fields = ["nama", "brand", "jenis", "tipe", "resolusi"]
         for p in products:
-            if kw in p.get("nama", "").lower():
-                filtered.append(p)
-                continue
-            if kw in p.get("brand", "").lower():
-                filtered.append(p)
-                continue
-            if kw in str(p.get("fitur", [])).lower():
-                filtered.append(p)
-                continue
-            if kw in p.get("jenis", "").lower():
-                filtered.append(p)
-                continue
-            if kw in p.get("tipe", "").lower():
-                filtered.append(p)
-                continue
+            for field in search_fields:
+                if kw in p.get(field, "").lower():
+                    filtered.append(p)
+                    break
+            else:
+                if kw in str(p.get("fitur", [])).lower():
+                    filtered.append(p)
         products = filtered
 
     return {
