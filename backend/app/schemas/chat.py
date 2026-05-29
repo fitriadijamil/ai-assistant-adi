@@ -31,6 +31,7 @@ class ProposalRequest(BaseModel):
     recording_days: int = 30
     requirements_text: str = ""
     selected_products: list[dict[str, Any]] = []
+    brand: str = ""
 
 
 class ProposalResponse(BaseModel):

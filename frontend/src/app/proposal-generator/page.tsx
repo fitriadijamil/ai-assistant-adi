@@ -17,6 +17,19 @@ const PROJECT_TYPES = [
 
 const RESOLUTIONS = ["2MP", "3MP", "4MP", "5MP", "8MP"];
 
+const BRANDS = [
+  "Semua Brand",
+  "Hikvision",
+  "Dahua",
+  "Uniview",
+  "Hiview",
+  "Ezviz",
+  "TP-Link Tapo",
+  "Imou",
+  "Bardi",
+  "Hilook",
+];
+
 export default function ProposalGeneratorPage() {
   const [clientName, setClientName] = useState("");
   const [projectType, setProjectType] = useState("");
@@ -25,6 +38,7 @@ export default function ProposalGeneratorPage() {
   const [resolution, setResolution] = useState("4MP");
   const [recordingDays, setRecordingDays] = useState(30);
   const [requirementsText, setRequirementsText] = useState("");
+  const [brand, setBrand] = useState("Semua Brand");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ProposalResponse | null>(null);
   const [error, setError] = useState("");
@@ -48,6 +62,7 @@ export default function ProposalGeneratorPage() {
         recording_days: recordingDays,
         requirements_text: requirementsText,
         selected_products: [],
+        brand: brand === "Semua Brand" ? "" : brand,
       });
       setResult(data);
     } catch (err) {
@@ -150,6 +165,21 @@ export default function ProposalGeneratorPage() {
                 value={recordingDays}
                 onChange={(e) => setRecordingDays(Number(e.target.value))}
               />
+            </label>
+
+            <label className="form-control w-full">
+              <span className="label-text">Brand</span>
+              <select
+                className="select select-bordered w-full"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+              >
+                {BRANDS.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
             </label>
 
             <label className="form-control w-full">

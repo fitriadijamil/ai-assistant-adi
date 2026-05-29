@@ -39,6 +39,7 @@ async def generate_proposal(
     recording_days: int,
     requirements_text: str,
     selected_products: list[dict],
+    brand: str = "",
 ) -> dict:
     if not settings.openrouter_api_key:
         return {
@@ -61,7 +62,7 @@ async def generate_proposal(
         simultaneous_streams=1,
     )
 
-    camera_products = await lookup_products_fn(category="cameras", keyword=resolution)
+    camera_products = await lookup_products_fn(category="cameras", keyword=resolution, brand=brand or None)
     hdd_products = await lookup_products_fn(category="hdd")
 
     user_prompt = f"""Buatkan proposal teknis untuk proyek CCTV dengan data berikut:
@@ -73,6 +74,7 @@ async def generate_proposal(
 - Jumlah Kamera: {camera_count}
 - Resolusi: {resolution}
 - Durasi Recording: {recording_days} hari
+- Brand yang Ditawarkan: {brand or "Semua brand (Hikvision, Dahua, Uniview, Hiview, dll)"}
 
 ## Kebutuhan Tambahan
 {requirements_text or "(tidak ada kebutuhan tambahan)"}

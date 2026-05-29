@@ -45,6 +45,7 @@ async def proposals_generate(request: ProposalRequest):
             recording_days=request.recording_days,
             requirements_text=request.requirements_text,
             selected_products=request.selected_products,
+            brand=request.brand,
         )
         return ProposalResponse(
             proposal_markdown=result["proposal_markdown"],

@@ -22,6 +22,7 @@ export interface ProposalRequest {
   recording_days: number;
   requirements_text: string;
   selected_products: Record<string, unknown>[];
+  brand: string;
 }
 
 export interface ProposalResponse {
