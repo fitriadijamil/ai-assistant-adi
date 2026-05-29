@@ -87,6 +87,7 @@ async def _handle_tool_calls(
     headers: dict,
 ) -> dict:
     tool_results = []
+    paired_results = []
     for tc in msg["tool_calls"]:
         tool = registry.get(tc["function"]["name"])
         if tool:
@@ -97,13 +98,14 @@ async def _handle_tool_calls(
                 logger.error(f"Tool {tc['function']['name']} failed: {e}")
                 result = {"error": str(e)}
             tool_results.append({"tool": tc["function"]["name"], "result": result})
+            paired_results.append({"tool_call_id": tc["id"], "tool_name": tc["function"]["name"], "result": result})
 
     full_messages.append(msg)
-    for tr in tool_results:
+    for pr in paired_results:
         full_messages.append({
             "role": "tool",
-            "tool_call_id": tc["id"],
-            "content": json.dumps(tr["result"]),
+            "tool_call_id": pr["tool_call_id"],
+            "content": json.dumps(pr["result"]),
         })
 
     payload = {
