@@ -92,11 +92,11 @@ async def generate_proposal(
         })
 
     if best_nvr:
-        nvr_price = best_nvr.get("harga", 0) or 0
+        nvr_price = best_nvr.get("harga", 0) or best_nvr.get("harga_estimasi", 0) or 0
         ch = best_nvr.get("channel", 0)
         if ch == 0 or ch >= camera_count:
             bom_items.append({
-                "no": 2, "deskripsi": f"NVR {best_nvr.get('nama', '')} - {best_nvr.get('channel', '?')} Channel",
+                "no": 2, "deskripsi": f"NVR {best_nvr.get('nama', '')} - {ch} Channel",
                 "qty": 1, "harga": nvr_price, "subtotal": nvr_price
             })
 
@@ -110,7 +110,7 @@ async def generate_proposal(
         })
 
     if best_poe:
-        poe_price = best_poe.get("harga_estimasi", 0) or 0
+        poe_price = best_poe.get("harga", 0) or best_poe.get("harga_estimasi", 0) or 0
         bom_items.append({
             "no": 4, "deskripsi": f"PoE Switch {best_poe.get('nama', '')} - {best_poe.get('port_count', '?')} Port",
             "qty": 1, "harga": poe_price, "subtotal": poe_price
@@ -124,46 +124,46 @@ async def generate_proposal(
 
     total_bom = sum(item["subtotal"] for item in bom_items)
 
-    user_prompt = f"""Buatkan proposal teknis untuk proyek CCTV dengan data berikut.
+    bom_markdown_table = "| No | Deskripsi Produk | Qty | Harga Satuan (IDR) | Subtotal (IDR) |\n"
+    bom_markdown_table += "|---|-----------------|-----|-------------------|----------------|\n"
+    for i in bom_items:
+        bom_markdown_table += f"| {i['no']} | {i['deskripsi']} | {i['qty']} | {fmt_price(i['harga'])} | {fmt_price(i['subtotal'])} |\n"
 
-TULISKAN TABEL BOM MENGGUNAKAN DATA PRE-COMPUTED DI BAWAH INI. GUNAKAN HARGA DAN SUBTOTAL YANG SUDAH DIHITUNG, JANGAN TULIS "TBD" ATAU "ESTIMASI".
+    user_prompt = f"""Buatkan proposal teknis untuk proyek CCTV dengan format markdown.
 
-## Data Klien
-- Nama Klien: {client_name}
-- Tipe Proyek: {project_type}
+STRUKTUR:
+## 1. Executive Summary
+## 2. Technical Overview
+## 3. Recommended Bill of Materials (BOM)
+## 4. Scope of Work (SOW)
+## 5. Kesimpulan
+
+DATA KLIEN:
+- Nama: {client_name}
+- Proyek: {project_type}
 - Lokasi: {location or "(tidak disebutkan)"}
-- Jumlah Kamera: {camera_count}
-- Resolusi: {resolution}
-- Durasi Recording: {recording_days} hari
-- Brand yang Ditawarkan: {brand or "Semua brand (Hikvision, Dahua, Uniview, Hiview, dll)"}
+- Kamera: {camera_count} unit {resolution}
+- Recording: {recording_days} hari
+- Brand: {brand or "Semua brand"}
 
-## Kebutuhan Tambahan
-{requirements_text or "(tidak ada kebutuhan tambahan)"}
-
-## Hasil Kalkulasi Teknis
-### Storage
-- Kebutuhan per hari: {storage_result['daily_storage_gb']} GB
-- Kebutuhan per bulan ({recording_days} hari): {storage_result['monthly_storage_gb']} GB
+HASIL KALKULASI:
+- Storage/hari: {storage_result['daily_storage_gb']} GB
+- Storage/bulan: {storage_result['monthly_storage_gb']} GB
 - Rekomendasi HDD: {storage_result['recommended_hdd_tb']} TB
-- Bitrate per kamera: {bitrate} bps
+- Bandwidth: {bandwidth_result['total_bandwidth_mbps']} Mbps
+- Rekomendasi Switch: {bandwidth_result['recommendation']}
 
-### Bandwidth
-- Total bandwidth: {bandwidth_result['total_bandwidth_mbps']} Mbps
-- Rekomendasi switch: {bandwidth_result['recommendation']}
+Kebutuhan tambahan: {requirements_text or "(tidak ada)"}
 
-## BILL OF MATERIALS (PRE-COMPUTED — WAJIB GUNAKAN DATA INI)
-Tabel berikut sudah dihitung. TULISKAN PERSIS di bagian BOM proposal dengan format markdown table.
+TUGAS:
+- Tulis section 1 (Executive Summary), 2 (Technical Overview), 4 (SOW), 5 (Kesimpulan)
+- UNTUK SECTION 3 (BOM), COPY TABLE DI BAWAH INI PERSIS. JANGAN DIUBAH.
 
-| No | Deskripsi Produk | Qty | Harga Satuan (IDR) | Subtotal (IDR) |
-|----|-----------------|-----|-------------------|----------------|
-{chr(10).join(f"| {i['no']} | {i['deskripsi']} | {i['qty']} | {fmt_price(i['harga'])} | {fmt_price(i['subtotal'])} |" for i in bom_items)}
+BOM TABLE (copy this exactly into section 3):
+{bom_markdown_table}
+**TOTAL: Rp {fmt_price(total_bom)}**
 
-**TOTAL:** Rp {fmt_price(total_bom)}
-
-## Produk yang Dipilih Langsung oleh User
-{json.dumps(selected_products, indent=2, ensure_ascii=False) if selected_products else "(belum ada produk spesifik yang dipilih)"}
-
-Susun proposal profesional. GUNAKAN HARGA BOM DI ATAS — JANGAN MENGUBAH ATAU TULIS TBD."""
+Gunakan bahasa Indonesia formal. Harga dalam Rupiah."""
 
     headers = {
         "Authorization": f"Bearer {settings.openrouter_api_key}",
