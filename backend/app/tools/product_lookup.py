@@ -13,9 +13,22 @@ CATALOG_FILES = {
     "hdd": CATALOG_DIR / "hdd.json",
 }
 
+HIVIEW_CATALOG_FILES = {
+    "cameras": CATALOG_DIR / "hiview_cameras.json",
+    "nvr": CATALOG_DIR / "hiview_nvr.json",
+}
+
 
 def _load_catalog(category: str) -> list[dict]:
     path = CATALOG_FILES.get(category)
+    if not path or not path.exists():
+        return []
+    with open(path) as f:
+        return json.load(f)
+
+
+def _load_hiview_catalog(category: str) -> list[dict]:
+    path = HIVIEW_CATALOG_FILES.get(category)
     if not path or not path.exists():
         return []
     with open(path) as f:
@@ -31,13 +44,17 @@ async def lookup_products_fn(
     category = category.lower().replace("-", "_")
     products = _load_catalog(category)
 
-    if not products:
+    hiview_products = _load_hiview_catalog(category)
+
+    if not products and not hiview_products:
         return {
             "category": category,
             "count": 0,
             "products": [],
             "note": f"Kategori '{category}' tidak ditemukan. Pilihan: cameras, nvr, poe_switches, hdd",
         }
+
+    products = products + hiview_products
 
     if brand:
         products = [
@@ -82,7 +99,7 @@ product_lookup_tool = Tool(
         "properties": {
             "category": {
                 "type": "string",
-                "description": "Kategori produk. Pilihan: cameras, nvr, poe_switches, hdd. Wajib diisi.",
+                "description": "Kategori produk. Pilihan: cameras, nvr, poe_switches, hdd. Untuk Hiview, data sudah termasuk harga (harga_md, harga_non_md, harga_online, harga_msrp).",
                 "enum": ["cameras", "nvr", "poe_switches", "hdd"],
             },
             "brand": {

@@ -1,0 +1,363 @@
+[
+  {
+    "nama": "HIK-PSU-4CH",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": 93000,
+    "harga_non_md": 98000,
+    "harga_online": 107000,
+    "harga_msrp": 139500,
+    "seri": "SWITCHING PSU 04 CH"
+  },
+  {
+    "nama": "HIK-PSU-8CH",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": 112000,
+    "harga_non_md": 118000,
+    "harga_online": 129000,
+    "harga_msrp": 168000,
+    "seri": "SWITCHING PSU 08 CH"
+  },
+  {
+    "nama": "HI-12V16A-16CH",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": 191000,
+    "harga_non_md": 202000,
+    "harga_online": 220000,
+    "harga_msrp": 286500,
+    "seri": "SWITCHING PSU 16 CH"
+  },
+  {
+    "nama": "HIVIEW600A",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": 420000,
+    "harga_non_md": 437000,
+    "harga_online": 504000,
+    "harga_msrp": 588000,
+    "seri": "UNINTERRUPTIBLE POWEER SUPPLY  (UPS)"
+  },
+  {
+    "nama": "HIVIEW1200VA",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": 928000,
+    "harga_non_md": 966000,
+    "harga_online": 1114000,
+    "harga_msrp": 1299000,
+    "seri": "UNINTERRUPTIBLE POWEER SUPPLY  (UPS)"
+  },
+  {
+    "nama": "HDMI EXTENDER 60 M",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": 280000,
+    "harga_non_md": 294000,
+    "harga_online": 322000,
+    "harga_msrp": 420000,
+    "seri": "EXTENDER HDMI"
+  },
+  {
+    "nama": "HDMI EXTENDER 150 M",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": 750000,
+    "harga_non_md": 78800,
+    "harga_online": 863000,
+    "harga_msrp": 1125000,
+    "seri": "EXTENDER HDMI"
+  },
+  {
+    "nama": "MICRO SD 32GB",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": null,
+    "harga_non_md": null,
+    "harga_online": null,
+    "harga_msrp": null,
+    "seri": "HV-MC32"
+  },
+  {
+    "nama": "MICRO SD 64GB",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": null,
+    "harga_non_md": null,
+    "harga_online": null,
+    "harga_msrp": null,
+    "seri": "HV-MC64"
+  },
+  {
+    "nama": "MICRO SD 128GB",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": null,
+    "harga_non_md": null,
+    "harga_online": null,
+    "harga_msrp": null,
+    "seri": "HV-MC128"
+  },
+  {
+    "nama": "MICRO SD 256GB",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": null,
+    "harga_non_md": null,
+    "harga_online": null,
+    "harga_msrp": null,
+    "seri": "HV-MC256"
+  },
+  {
+    "nama": "Access Control Back Up Power Supply",
+    "brand": "Hiview",
+    "kategori": "Accessories",
+    "harga_md": 225000,
+    "harga_non_md": 237000,
+    "harga_online": 259000,
+    "harga_msrp": 338000,
+    "seri": "HIK-ACS80"
+  },
+  {
+    "nama": "C3W",
+    "brand": "Hiview",
+    "kategori": "Wireless",
+    "harga_md": 297000
+  },
+  {
+    "nama": "C5W",
+    "brand": "Hiview",
+    "kategori": "Wireless",
+    "harga_md": 437000
+  },
+  {
+    "nama": "C3W-PRO",
+    "brand": "Hiview",
+    "kategori": "Wireless",
+    "harga_md": 367120
+  },
+  {
+    "nama": "C5W-PRO",
+    "brand": "Hiview",
+    "kategori": "Wireless",
+    "harga_md": 536000
+  },
+  {
+    "nama": "C3W-DUAL",
+    "brand": "Hiview",
+    "kategori": "Wireless",
+    "harga_md": 584000
+  },
+  {
+    "nama": "C5W-DUAL",
+    "brand": "Hiview",
+    "kategori": "Wireless",
+    "harga_md": 627000
+  },
+  {
+    "nama": "PC3W",
+    "brand": "Hiview",
+    "kategori": "Wireless",
+    "harga_md": 566000
+  },
+  {
+    "nama": "PC5W",
+    "brand": "Hiview",
+    "kategori": "Wireless",
+    "harga_md": 702000
+  },
+  {
+    "nama": "PC3W-DUAL",
+    "brand": "Hiview",
+    "kategori": "Wireless",
+    "harga_md": 831000
+  },
+  {
+    "nama": "PC3W-DUAL",
+    "brand": "Hiview",
+    "kategori": "Wireless",
+    "harga_md": 1024000
+  },
+  {
+    "nama": "PC4W-4G-SOLAR",
+    "brand": "Hiview",
+    "kategori": "Wireless",
+    "harga_md": 2797000
+  },
+  {
+    "nama": "HIK 106",
+    "brand": "Hiview",
+    "kategori": "Transmission",
+    "harga_md": 381000,
+    "seri": "AI POE SWITCH"
+  },
+  {
+    "nama": "HIK 806M",
+    "brand": "Hiview",
+    "kategori": "Transmission",
+    "harga_md": 279000,
+    "seri": "AI POE SWITCH"
+  },
+  {
+    "nama": "HIK 2082G",
+    "brand": "Hiview",
+    "kategori": "Transmission",
+    "harga_md": 679000,
+    "seri": "AI POE SWITCH"
+  },
+  {
+    "nama": "HIK 8010M",
+    "brand": "Hiview",
+    "kategori": "Transmission",
+    "harga_md": 447000,
+    "seri": "AI POE SWITCH"
+  },
+  {
+    "nama": "HIK 8016M",
+    "brand": "Hiview",
+    "kategori": "Transmission",
+    "harga_md": 1386000,
+    "seri": "AI POE SWITCH"
+  },
+  {
+    "nama": "HIK 6016",
+    "brand": "Hiview",
+    "kategori": "Transmission",
+    "harga_md": 1696000,
+    "seri": "AI POE SWITCH"
+  },
+  {
+    "nama": "HV-20RX100",
+    "brand": "Hiview",
+    "kategori": "Monitor",
+    "harga_md": 750000,
+    "seri": "MONITOR 19'5 INCH"
+  },
+  {
+    "nama": "HV-22RX100",
+    "brand": "Hiview",
+    "kategori": "Monitor",
+    "harga_md": 980000,
+    "seri": "MONITOR 22 INCH"
+  },
+  {
+    "nama": "HV-24RX100",
+    "brand": "Hiview",
+    "kategori": "Monitor",
+    "harga_md": 1350000,
+    "seri": "MONITOR 24 INCH"
+  },
+  {
+    "nama": "HV-DC1CORE-1000",
+    "brand": "Hiview",
+    "kategori": "Cable",
+    "harga_md": 830000,
+    "seri": "FIBER CABLE"
+  },
+  {
+    "nama": "HV-DC2CORE-1000",
+    "brand": "Hiview",
+    "kategori": "Cable",
+    "harga_md": 1180000,
+    "seri": "FIBER CABLE"
+  },
+  {
+    "nama": "HV-DC4CORE-1000",
+    "brand": "Hiview",
+    "kategori": "Cable",
+    "harga_md": 1950000,
+    "seri": "FIBER CABLE"
+  },
+  {
+    "nama": "HV-DC8CORE-1000",
+    "brand": "Hiview",
+    "kategori": "Cable",
+    "harga_md": null,
+    "seri": "FIBER CABLE"
+  },
+  {
+    "nama": "HIVIEW HV-CCA6-305W(WHITE)",
+    "brand": "Hiview",
+    "kategori": "Cable",
+    "harga_md": 695000,
+    "seri": "UTP CAT 6 CCA"
+  },
+  {
+    "nama": "HIVIEW 920I COPPER CAT6",
+    "brand": "Hiview",
+    "kategori": "Cable",
+    "harga_md": 1750000,
+    "seri": "UTP CAT 6 OFC"
+  },
+  {
+    "nama": "HIVIEW RG59+P 300 \nC SERIES",
+    "brand": "Hiview",
+    "kategori": "Cable",
+    "harga_md": 675000,
+    "seri": "KABEL COAXIAL"
+  },
+  {
+    "nama": "KABEL RG59+300 REGULER",
+    "brand": "Hiview",
+    "kategori": "Cable",
+    "harga_md": 750000,
+    "seri": "KABEL COAXIAL"
+  },
+  {
+    "nama": "HIVIEW RG59+P 100 METER",
+    "brand": "Hiview",
+    "kategori": "Cable",
+    "harga_md": 255000,
+    "seri": "KABEL COAXIAL"
+  },
+  {
+    "nama": "HIVIEW RG59+P 50 METER",
+    "brand": "Hiview",
+    "kategori": "Cable",
+    "harga_md": 140000,
+    "seri": "KABEL COAXIAL"
+  },
+  {
+    "nama": "HIVIEW RG6+P 300 METER",
+    "brand": "Hiview",
+    "kategori": "Cable",
+    "harga_md": 790000,
+    "seri": "KABEL COAXIAL"
+  },
+  {
+    "nama": "HIK-K1T320MFX",
+    "brand": "Hiview",
+    "kategori": "Access Control",
+    "harga_md": 819000,
+    "seri": "ACCESS CONTROL"
+  },
+  {
+    "nama": "HIK-K1T320MFWX",
+    "brand": "Hiview",
+    "kategori": "Access Control",
+    "harga_md": 928000,
+    "seri": "ACCESS CONTROL"
+  },
+  {
+    "nama": "HIK-FRT24-F (M1 Card)",
+    "brand": "Hiview",
+    "kategori": "Access Control",
+    "harga_md": 982000,
+    "seri": "ACCESS CONTROL"
+  },
+  {
+    "nama": "HIK-FRT24-FW( (M1 Card)",
+    "brand": "Hiview",
+    "kategori": "Access Control",
+    "harga_md": 1033000,
+    "seri": "ACCESS CONTROL"
+  },
+  {
+    "nama": "HIK-FRT43-FW  (M1 Card)",
+    "brand": "Hiview",
+    "kategori": "Access Control",
+    "harga_md": 1679000,
+    "seri": "ACCESS CONTROL"
+  }
+]
