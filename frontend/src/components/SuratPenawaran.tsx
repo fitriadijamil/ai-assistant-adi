@@ -95,7 +95,8 @@ export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
 
         <div className="kepada">
           <div>Kepada Yth,</div>
-          <div>Bapak/Ibu : {customer_attention}</div>
+          <div>Bapak/Ibu : {client_name}</div>
+          <div>{customer_address}</div>
         </div>
 
         <div className="pembuka">
