@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
-      <body className="min-h-screen bg-base-200" suppressHydrationWarning>
+      <body className="min-h-screen bg-base-200">
         <div className="drawer lg:drawer-open">
           <input id="sidebar-drawer" type="checkbox" className="drawer-toggle" />
           <div className="drawer-content flex flex-col">

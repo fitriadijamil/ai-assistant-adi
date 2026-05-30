@@ -1,16 +1,14 @@
-import { ReactNode } from "react";
 import { LetterInfo } from "@/lib/api";
 
 interface SuratPenawaranProps {
   letterInfo: LetterInfo;
-  children?: ReactNode;
 }
 
 function formatPrice(val: number): string {
   return `Rp ${val.toLocaleString("id-ID")}`;
 }
 
-export default function SuratPenawaran({ letterInfo, children }: SuratPenawaranProps) {
+export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
   const { letter_number, date, customer_attention, customer_address, client_name, project_type, grand_total } = letterInfo;
 
   return (
@@ -117,8 +115,6 @@ export default function SuratPenawaran({ letterInfo, children }: SuratPenawaranP
         <div style={{ marginBottom: "6px" }}>
           <strong>{grand_total > 0 ? `Total Harga: ${formatPrice(grand_total)}` : ""}</strong>
         </div>
-
-        {children}
 
         <div className="syarat">
           <h3>Syarat &amp; Ketentuan:</h3>
