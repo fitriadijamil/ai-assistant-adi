@@ -17,72 +17,61 @@ export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
         .surat-wrapper {
           font-family: 'Times New Roman', Times, serif;
           font-size: 11pt;
-          line-height: 1.5;
+          line-height: 1.4;
         }
         .surat-wrapper .kop {
-          text-align: center;
-          border-bottom: 2px solid #000;
-          padding-bottom: 8px;
-          margin-bottom: 12px;
+          text-align: left;
+          margin-bottom: 10px;
         }
-        .surat-wrapper .kop .nama-perusahaan {
-          font-size: 14pt;
-          font-weight: bold;
-          margin: 0;
-          letter-spacing: 1px;
-        }
-        .surat-wrapper .kop .subtitle {
-          font-size: 10pt;
-          font-style: italic;
-        }
-        .surat-wrapper .kop .info {
-          font-size: 10pt;
-          margin-top: 4px;
-        }
-        .surat-wrapper .kop .info div {
+        .surat-wrapper .kop div {
           margin: 1px 0;
         }
         .surat-wrapper .body {
-          padding: 0 4px;
+          padding: 0;
         }
-        .surat-wrapper .meta-line {
-          font-size: 11pt;
+        .surat-wrapper .meta-right {
+          text-align: right;
           margin: 2px 0;
         }
         .surat-wrapper .perihal {
           font-weight: bold;
           text-decoration: underline;
-          margin: 8px 0;
+          margin: 6px 0 12px 0;
         }
         .surat-wrapper .kepada {
-          margin: 8px 0;
+          margin: 6px 0;
+        }
+        .surat-wrapper .pembuka {
+          font-weight: bold;
+          margin: 6px 0;
+          text-align: justify;
         }
         .surat-wrapper .syarat {
-          margin-top: 10px;
+          margin-top: 8px;
           border: 1px solid #000;
-          padding: 8px;
+          padding: 6px;
         }
         .surat-wrapper .syarat h3 {
           font-size: 11pt;
           font-weight: bold;
-          margin: 0 0 4px 0;
+          margin: 0 0 3px 0;
         }
         .surat-wrapper .syarat table {
           width: 100%;
           border-collapse: collapse;
         }
         .surat-wrapper .syarat td {
-          padding: 1px 6px;
+          padding: 1px 4px;
           vertical-align: top;
           font-size: 10pt;
         }
         .surat-wrapper .ttd {
-          margin-top: 24px;
+          margin-top: 20px;
           text-align: right;
         }
-        .surat-wrapper .ttd .jarak {
-          height: 48px;
-        }
+        .surat-wrapper .ttd .jarak1 { height: 6px; }
+        .surat-wrapper .ttd .jarak2 { height: 6px; }
+        .surat-wrapper .ttd .jarak3 { height: 6px; }
         .surat-wrapper .ttd .nama {
           font-weight: bold;
           text-decoration: underline;
@@ -93,29 +82,27 @@ export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
       `}</style>
 
       <div className="kop">
-        <div className="nama-perusahaan">PT. ADI SUKSES SEJAHTERA</div>
-        <div className="subtitle">CCTV &amp; Security System Specialist</div>
-        <div className="info">
-          <div>adicctv.com</div>
-          <div>Kp. Bojong RT.005/026 No. 50, Bakti Jaya Sukmajaya 16418</div>
-          <div>No. Tlp/WA: 085156044200</div>
-          <div>Email: info@adicctv.com</div>
-        </div>
+        <div><strong>adicctv.com</strong></div>
+        <div>Alamat : Kp. Bojong RT.005/026 Bakti Jaya Sukmajaya Depok 16418</div>
+        <div>Email : fitriadijamil@gmail.com</div>
       </div>
 
       <div className="body">
-        <div className="meta-line">No Penawaran: {letter_number}</div>
-        <div className="meta-line">Tanggal: {date}</div>
+        <div className="meta-right">Nomor Surat: {letter_number}</div>
+        <div className="meta-right">{date}</div>
+
         <div className="perihal">Perihal: Penawaran Harga Sistem {project_type} untuk {client_name}</div>
 
         <div className="kepada">
-          <div>Kepada Yth:</div>
-          <div>{customer_attention}</div>
-          <div>{customer_address}</div>
-          <div style={{ marginTop: "4px" }}>Dengan hormat,</div>
+          <div>Kepada Yth,</div>
+          <div>Bapak/Ibu : {customer_attention}</div>
         </div>
 
-        <div style={{ marginBottom: "6px" }}>
+        <div className="pembuka">
+          Bersama surat ini, kami dari adicctv.com mengajukan penawaran harga untuk pengadaan sistem {project_type} sebagai berikut:
+        </div>
+
+        <div style={{ marginBottom: "4px" }}>
           <strong>{grand_total > 0 ? `Total Harga: ${formatPrice(grand_total)}` : ""}</strong>
         </div>
 
@@ -136,7 +123,9 @@ export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
 
         <div className="ttd">
           <div>Hormat kami,</div>
-          <div className="jarak" />
+          <div className="jarak1" />
+          <div className="jarak2" />
+          <div className="jarak3" />
           <div className="nama">Fitriadi Jamil</div>
         </div>
       </div>

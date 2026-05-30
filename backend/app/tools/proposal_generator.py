@@ -11,41 +11,36 @@ from app.tools.product_lookup import lookup_products_fn
 
 logger = logging.getLogger(__name__)
 
-PROPOSAL_SYSTEM_PROMPT = """Anda adalah Adi, AI Assistant Proposal Writer untuk perusahaan CCTV & Security System PT. Adi Sukses Sejahtera.
+PROPOSAL_SYSTEM_PROMPT = """Anda adalah Adi, AI Assistant Proposal Writer untuk adicctv.com.
 
 Tugas Anda adalah membuat SURAT PENAWARAN HARGA (proposal penawaran) 1 halaman dalam format formal bahasa Indonesia.
 
 STRUKTUR SURAT PENAWARAN WAJIB:
-1. **KOP SURAT** —
-   PT. ADI SUKSES SEJAHTERA
-   CCTV & Security System Specialist
+1. **Header** —
    adicctv.com
-   Kp. Bojong RT.005/026 No. 50, Bakti Jaya Sukmajaya 16418
-   No. Tlp/WA: 085156044200
-   Email: info@adicctv.com
-   (Tampilkan sebagai teks biasa, bukan markdown table)
-2. **Nomor Surat** — {letter_number}
-3. **Tanggal** — {today_date}
+   Alamat : Kp. Bojong RT.005/026 Bakti Jaya Sukmajaya Depok 16418
+   Email : fitriadijamil@gmail.com
+2. **Nomor Surat** — {letter_number} (rata kanan)
+3. **Tanggal** — (rata kanan, sebaris dengan atau di bawah nomor surat)
 4. **Perihal** — Penawaran Harga Sistem {project_type} untuk {client_name}
-5. **Data Customer** — Kepada Yth: {customer_attention}, {customer_address}
+5. **Kepada Yth** — Bapak/Ibu : {customer_attention}
 6. **Isi Penawaran**:
-   a. Bill of Materials (BOM) — tulis PERSIS: <!--BOM-->
-   b. Ketentuan:
-      - Harga sudah termasuk PPN 11%
-      - Harga sudah termasuk ongkos kirim area Jabodetabek
+   a. Kalimat pembuka bold: "Bersama surat ini, kami dari adicctv.com mengajukan penawaran harga..."
+   b. Bill of Materials (BOM) — tulis PERSIS: <!--BOM-->
    c. **Syarat & Ketentuan**:
       - Pembayaran: DP 70%, setelah pekerjaan selesai 30%
       - Pekerjaan dimulai maksimal 5 hari setelah DP diterima
       - Garansi Produk: 1 tahun
       - Garansi Instalasi: 1 bulan
       - Masa berlaku penawaran: 5 hari
-7. **Penutup** — Tanda tangan: Hormat kami, lalu 3 baris kosong, Fitriadi Jamil
+      - Harga sudah termasuk PPN 11%
+      - Ongkos kirim sudah termasuk area Jabodetabek
+7. **Penutup** — Hormat kami, lalu 3 baris kosong, Fitriadi Jamil
 
 PANDUAN FORMAT:
-- Gunakan bahasa Indonesia formal dan profesional
+- Gunakan bahasa Indonesia formal
 - Harga dalam rupiah, gunakan format angka dengan pemisah titik (contoh: 1.500.000)
 - JANGAN menulis tabel BOM — cukup tulis <!--BOM--> di bagian BOM
-- Jangan membuat spek palsu — jika tidak yakin, tulis "perlu konfirmasi lebih lanjut"
 - Buat surat pendek dan padat, muat dalam 1 halaman"""
 
 
@@ -200,17 +195,15 @@ async def generate_proposal(
 
 DATA PERUSAHAAN:
 - Website: adicctv.com
-- Alamat: Kp. Bojong RT.005/026 No. 50, Bakti Jaya Sukmajaya 16418
-- No. Tlp/WA: 085156044200
-- Email: info@adicctv.com
+- Alamat: Kp. Bojong RT.005/026 Bakti Jaya Sukmajaya Depok 16418
+- Email: fitriadijamil@gmail.com
 
 NOMOR SURAT: {letter_number}
 TANGGAL: {today.strftime('%d %B %Y')}
 
 DATA KLIEN:
 - Nama: {client_name}
-- Kepada Yth: {customer_attention or 'Yth. Bapak/Ibu'}
-- Alamat: {customer_address or '(tidak disebutkan)'}
+- Kepada Yth, Bapak/Ibu : {customer_attention or 'Yth. Bapak/Ibu'}
 - Proyek: {project_type}
 - Kamera: {camera_count} unit {resolution}
 - Recording: {recording_days} hari
@@ -221,13 +214,13 @@ HASIL KALKULASI:
 - Storage/bulan: {storage_result['monthly_storage_gb']} GB
 - Rekomendasi HDD: {storage_result['recommended_hdd_tb']} TB
 - Bandwidth: {bandwidth_result['total_bandwidth_mbps']} Mbps
-- Rekomendasi Switch: {bandwidth_result['recommendation']}
 
 Kebutuhan tambahan: {requirements_text or '(tidak ada)'}
 
 TUGAS:
 - Buat surat penawaran sesuai STRUKTUR yang sudah ditentukan di system prompt
 - Perihal: "Penawaran Harga Sistem {project_type} untuk {client_name}"
+- Kalimat pembuka bold: "Bersama surat ini, kami dari adicctv.com mengajukan penawaran harga untuk pengadaan sistem {project_type} sebagai berikut:"
 - UNTUK BAGIAN BOM (Bill of Materials), TULIS PERSIS: <!--BOM-->
 - JANGAN TULIS TABEL ATAU KONTEN APAPUN DI BAGIAN BOM. CUKUP TULIS <!--BOM-->
 - Gunakan bahasa Indonesia formal, pendek dan padat, muat dalam 1 halaman"""
