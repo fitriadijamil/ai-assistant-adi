@@ -51,6 +51,7 @@ async def proposals_generate(request: ProposalRequest):
             proposal_markdown=result["proposal_markdown"],
             storage_summary=result.get("storage_summary"),
             bandwidth_summary=result.get("bandwidth_summary"),
+            bom_data=result.get("bom_data"),
         )
     except Exception as e:
         logger.exception(f"Proposal endpoint error: {e}")

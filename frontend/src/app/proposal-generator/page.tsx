@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { generateProposal, ProposalResponse } from "@/lib/api";
+import BomTable from "@/components/BomTable";
 
 const PROJECT_TYPES = [
   "Office CCTV Installation",
@@ -86,6 +87,7 @@ export default function ProposalGeneratorPage() {
       .proposal-markdown th { background: #e5e7eb; font-weight: 600; }
       .proposal-markdown th, .proposal-markdown td { border: 1px solid #d1d5db; padding: 6px 10px; text-align: left; }
       .proposal-markdown tr:nth-child(even) td { background: #f9fafb; }
+      .bom-table { border-collapse: collapse; width: 100%; }
 
       @media print {
         html, body { font-size: 12pt; color: #000; background: #fff !important; width: 100%; }
@@ -110,6 +112,8 @@ export default function ProposalGeneratorPage() {
         .print-stat { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .stat, .stat-title, .stat-value { padding: 2px 4px !important; }
         .overflow-x-auto { overflow: visible !important; }
+        .bom-table td, .bom-table th { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .bom-table thead tr:first-child th { background: #dbeafe !important; }
         @page { margin: 15mm 20mm; }
       }
     `}</style>
@@ -284,21 +288,35 @@ export default function ProposalGeneratorPage() {
                   </div>
                 )}
 
-                <div className="prose prose-sm max-w-none proposal-markdown">
-                  <ReactMarkdown
-                    components={{
-                      table: ({ children }) => (
-                        <div className="overflow-x-auto">
-                          <table className="table table-sm proposal-table">
-                            {children}
-                          </table>
+                {(() => {
+                  const parts = result.proposal_markdown.split("<!--BOM-->");
+                  return (
+                    <>
+                      {parts.map((part, i) => (
+                        <div key={i}>
+                          <div className="prose prose-sm max-w-none proposal-markdown">
+                            <ReactMarkdown
+                              components={{
+                                table: ({ children }) => (
+                                  <div className="overflow-x-auto">
+                                    <table className="table table-sm proposal-table">
+                                      {children}
+                                    </table>
+                                  </div>
+                                ),
+                              }}
+                            >
+                              {part}
+                            </ReactMarkdown>
+                          </div>
+                          {i < parts.length - 1 && result.bom_data && (
+                            <BomTable data={result.bom_data} />
+                          )}
                         </div>
-                      ),
-                    }}
-                  >
-                    {result.proposal_markdown}
-                  </ReactMarkdown>
-                </div>
+                      ))}
+                    </>
+                  );
+                })()}
               </div>
             ) : (
               <div className="flex items-center justify-center h-64 text-base-content/40">

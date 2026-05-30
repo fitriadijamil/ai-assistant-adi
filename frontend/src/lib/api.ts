@@ -25,10 +25,29 @@ export interface ProposalRequest {
   brand: string;
 }
 
+export interface BomItem {
+  no: number;
+  deskripsi: string;
+  tipe: string;
+  qty: number;
+  satuan: string;
+  harga: number;
+  total: number;
+}
+
+export interface BomData {
+  kategori_a: BomItem[];
+  kategori_b: BomItem[];
+  total_a: number;
+  total_b: number;
+  grand_total: number;
+}
+
 export interface ProposalResponse {
   proposal_markdown: string;
   storage_summary: Record<string, unknown> | null;
   bandwidth_summary: Record<string, unknown> | null;
+  bom_data: BomData | null;
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";

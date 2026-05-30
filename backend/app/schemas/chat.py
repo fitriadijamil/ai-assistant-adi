@@ -38,3 +38,4 @@ class ProposalResponse(BaseModel):
     proposal_markdown: str
     storage_summary: dict[str, Any] | None = None
     bandwidth_summary: dict[str, Any] | None = None
+    bom_data: dict[str, Any] | None = None

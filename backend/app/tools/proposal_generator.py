@@ -50,6 +50,7 @@ async def generate_proposal(
             "proposal_markdown": "AI Assistant belum dikonfigurasi. Silakan atur OPENROUTER_API_KEY di file .env.",
             "storage_summary": None,
             "bandwidth_summary": None,
+            "bom_data": None,
         }
 
     storage_result = await storage_calculator_fn(
@@ -99,52 +100,67 @@ async def generate_proposal(
 
     bom_items = []
 
+    kategori_a = []
+    kategori_b = []
+    item_no = 0
+
+    def add_item(deskripsi: str, tipe: str, qty: int, satuan: str, harga: int, cat: str):
+        nonlocal item_no
+        item_no += 1
+        total = qty * harga
+        entry = {"no": item_no, "deskripsi": deskripsi, "tipe": tipe, "qty": qty, "satuan": satuan, "harga": harga, "total": total}
+        if cat == "A":
+            kategori_a.append(entry)
+        else:
+            kategori_b.append(entry)
+        return entry
+
     if best_camera:
         camera_price = best_camera.get("harga", 0) or 0
-        bom_items.append({
-            "no": 1, "deskripsi": f"Kamera {best_camera.get('nama', 'CCTV')} - {best_camera.get('resolusi', resolution)} ({best_camera.get('jenis', '')})",
-            "qty": camera_count, "harga": camera_price, "subtotal": camera_count * camera_price
-        })
+        add_item(
+            f"Kamera {best_camera.get('nama', 'CCTV')} - {best_camera.get('resolusi', resolution)} ({best_camera.get('jenis', '')})",
+            "IP Camera",
+            camera_count, "Unit", camera_price, "A"
+        )
 
     if best_nvr:
         nvr_price = best_nvr.get("harga", 0) or best_nvr.get("harga_estimasi", 0) or 0
         ch = best_nvr.get("channel", 0)
         if ch == 0 or ch >= camera_count:
-            bom_items.append({
-                "no": 2, "deskripsi": f"NVR {best_nvr.get('nama', '')} - {ch} Channel",
-                "qty": 1, "harga": nvr_price, "subtotal": nvr_price
-            })
+            add_item(
+                f"NVR {best_nvr.get('nama', '')} - {ch} Channel",
+                "NVR Recorder",
+                1, "Unit", nvr_price, "A"
+            )
 
     if best_hdd:
         hdd_price = best_hdd.get("harga", 0) or 0
         hdd_cap = best_hdd.get("kapasitas_tb", 8)
-        bom_items.append({
-            "no": 3, "deskripsi": f"HDD {best_hdd.get('nama', 'Surveillance HDD')} - {hdd_cap}TB",
-            "qty": hdd_count, "harga": hdd_price, "subtotal": hdd_count * hdd_price
-        })
+        add_item(
+            f"HDD {best_hdd.get('nama', 'Surveillance HDD')} - {hdd_cap}TB",
+            "Storage",
+            hdd_count, "Unit", hdd_price, "A"
+        )
 
     if best_poe:
         poe_price = best_poe.get("harga", 0) or best_poe.get("harga_estimasi", 0) or 0
-        bom_items.append({
-            "no": 4,             "deskripsi": f"PoE Switch {best_poe.get('nama', '')} - {best_poe.get('port', '?')} Port",
-            "qty": 1, "harga": poe_price, "subtotal": poe_price
-        })
+        add_item(
+            f"PoE Switch {best_poe.get('nama', '')} - {best_poe.get('port', '?')} Port",
+            "Switch",
+            1, "Unit", poe_price, "A"
+        )
 
-    bom_kabel_price = 300000
-    bom_items.append({
-        "no": 5, "deskripsi": "Kabel UTP Cat6 + Konektor RJ45 + Accessories",
-        "qty": 1, "harga": bom_kabel_price, "subtotal": bom_kabel_price
-    })
+    add_item(
+        "Kabel UTP Cat6 + Konektor RJ45 + Aksesoris Instalasi",
+        "Material",
+        1, "Lot", 300000, "B"
+    )
 
-    total_bom = sum(item["subtotal"] for item in bom_items)
+    total_a = sum(i["total"] for i in kategori_a)
+    total_b = sum(i["total"] for i in kategori_b)
+    total_bom = total_a + total_b
 
-    bom_markdown_text = f"""### Recommended Bill of Materials (BOM)
-
-| No | Deskripsi Produk | Qty | Harga Satuan (IDR) | Subtotal (IDR) |
-|---|-----------------|-----|-------------------|----------------|
-{chr(10).join(f"| {i['no']} | {i['deskripsi']} | {i['qty']} | {fmt_price(i['harga'])} | {fmt_price(i['subtotal'])} |" for i in bom_items)}
-
-**TOTAL: Rp {fmt_price(total_bom)}**"""
+    bom_data = {"kategori_a": kategori_a, "kategori_b": kategori_b, "total_a": total_a, "total_b": total_b, "grand_total": total_bom}
 
     user_prompt = f"""Buatkan proposal teknis untuk proyek CCTV dengan format markdown.
 
@@ -202,23 +218,12 @@ Gunakan bahasa Indonesia formal."""
             resp.raise_for_status()
             data = resp.json()
             content = data["choices"][0]["message"]["content"] or ""
-            if "<!--BOM-->" in content:
-                content = content.replace("<!--BOM-->", bom_markdown_text)
-            lines = content.split("\n")
-            seen_sep = False
-            clean = []
-            for line in lines:
-                if line.strip().startswith("|---"):
-                    if seen_sep:
-                        continue
-                    seen_sep = True
-                clean.append(line)
-            content = "\n".join(clean)
 
             return {
                 "proposal_markdown": content,
                 "storage_summary": storage_result,
                 "bandwidth_summary": bandwidth_result,
+                "bom_data": bom_data,
             }
 
     except httpx.TimeoutException:
@@ -227,6 +232,7 @@ Gunakan bahasa Indonesia formal."""
             "proposal_markdown": "Maaf, pembuatan proposal timeout. Silakan coba lagi dengan data yang lebih sederhana.",
             "storage_summary": storage_result,
             "bandwidth_summary": bandwidth_result,
+            "bom_data": None,
         }
     except httpx.HTTPStatusError as e:
         logger.error(f"OpenRouter returned {e.response.status_code}: {e.response.text}")
@@ -234,6 +240,7 @@ Gunakan bahasa Indonesia formal."""
             "proposal_markdown": f"Maaf, terjadi kesalahan pada layanan AI (HTTP {e.response.status_code}). Silakan coba lagi.",
             "storage_summary": storage_result,
             "bandwidth_summary": bandwidth_result,
+            "bom_data": None,
         }
     except Exception as e:
         logger.exception(f"Unexpected error in proposal generation: {e}")
@@ -241,4 +248,5 @@ Gunakan bahasa Indonesia formal."""
             "proposal_markdown": "Maaf, terjadi kesalahan yang tidak terduga. Silakan coba lagi.",
             "storage_summary": storage_result,
             "bandwidth_summary": bandwidth_result,
+            "bom_data": None,
         }
