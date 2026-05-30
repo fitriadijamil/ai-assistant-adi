@@ -112,7 +112,7 @@ export default function ProposalGeneratorPage() {
         .proposal-markdown th, .proposal-markdown td { border: 1px solid #333; padding: 5px 8px; text-align: left; }
         .proposal-markdown th { background: #e0e0e0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-weight: bold; }
         .proposal-markdown tr:nth-child(even) td { background: #f5f5f5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .print-stat, .card .card-title { display: none !important; }
+        .print-stat, .card .card-title, .print-header { display: none !important; }
         .overflow-x-auto { overflow: visible !important; }
         .bom-table td, .bom-table th { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .bom-table thead tr:first-child th { background: #dbeafe !important; }
