@@ -274,87 +274,56 @@ export default function ProposalGeneratorPage() {
 
             {result ? (
               <div ref={previewRef} className="overflow-y-auto max-h-[70vh] proposal-content">
-                {result.letter_info ? (
-                  <SuratPenawaran letterInfo={result.letter_info}>
-                    {(() => {
-                      const parts = result.proposal_markdown.split("<!--BOM-->");
-                      return (
-                        <>
-                          {parts.map((part, i) => (
-                            <div key={i}>
-                              <div className="prose prose-sm max-w-none proposal-markdown">
-                                <ReactMarkdown
-                                  components={{
-                                    table: ({ children }) => (
-                                      <div className="overflow-x-auto">
-                                        <table className="table table-sm proposal-table">
-                                          {children}
-                                        </table>
-                                      </div>
-                                    ),
-                                  }}
-                                >
-                                  {part}
-                                </ReactMarkdown>
-                              </div>
-                              {i < parts.length - 1 && result.bom_data && (
-                                <BomTable data={result.bom_data} />
-                              )}
-                            </div>
-                          ))}
-                        </>
-                      );
-                    })()}
-                  </SuratPenawaran>
-                ) : (
-                  <>
-                    {result.storage_summary && (
-                      <div className="grid grid-cols-2 gap-2 mb-4 p-3 bg-base-200 rounded-box print-stat">
-                        <div className="stat p-1 min-h-0">
-                          <div className="stat-title text-xs">Storage/Day</div>
-                          <div className="stat-value text-lg">
-                            {String(result.storage_summary.daily_storage_gb)} GB
-                          </div>
-                        </div>
-                        <div className="stat p-1 min-h-0">
-                          <div className="stat-title text-xs">Recommended HDD</div>
-                          <div className="stat-value text-lg">
-                            {String(result.storage_summary.recommended_hdd_tb)} TB
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {(() => {
-                      const parts = result.proposal_markdown.split("<!--BOM-->");
-                      return (
-                        <>
-                          {parts.map((part, i) => (
-                            <div key={i}>
-                              <div className="prose prose-sm max-w-none proposal-markdown">
-                                <ReactMarkdown
-                                  components={{
-                                    table: ({ children }) => (
-                                      <div className="overflow-x-auto">
-                                        <table className="table table-sm proposal-table">
-                                          {children}
-                                        </table>
-                                      </div>
-                                    ),
-                                  }}
-                                >
-                                  {part}
-                                </ReactMarkdown>
-                              </div>
-                              {i < parts.length - 1 && result.bom_data && (
-                                <BomTable data={result.bom_data} />
-                              )}
-                            </div>
-                          ))}
-                        </>
-                      );
-                    })()}
-                  </>
+                {result.letter_info && (
+                  <SuratPenawaran letterInfo={result.letter_info} />
                 )}
+
+                {result.storage_summary && (
+                  <div className="grid grid-cols-2 gap-2 mb-4 p-3 bg-base-200 rounded-box print-stat">
+                    <div className="stat p-1 min-h-0">
+                      <div className="stat-title text-xs">Storage/Day</div>
+                      <div className="stat-value text-lg">
+                        {String(result.storage_summary.daily_storage_gb)} GB
+                      </div>
+                    </div>
+                    <div className="stat p-1 min-h-0">
+                      <div className="stat-title text-xs">Recommended HDD</div>
+                      <div className="stat-value text-lg">
+                        {String(result.storage_summary.recommended_hdd_tb)} TB
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {(() => {
+                  const parts = result.proposal_markdown.split("<!--BOM-->");
+                  return (
+                    <>
+                      {parts.map((part, i) => (
+                        <div key={i}>
+                          <div className="prose prose-sm max-w-none proposal-markdown">
+                            <ReactMarkdown
+                              components={{
+                                table: ({ children }) => (
+                                  <div className="overflow-x-auto">
+                                    <table className="table table-sm proposal-table">
+                                      {children}
+                                    </table>
+                                  </div>
+                                ),
+                              }}
+                            >
+                              {part}
+                            </ReactMarkdown>
+                          </div>
+                          {i < parts.length - 1 && result.bom_data && (
+                            <BomTable data={result.bom_data} />
+                          )}
+                        </div>
+                      ))}
+                    </>
+                  );
+                })()}
               </div>
             ) : (
               <div className="flex items-center justify-center h-64 text-base-content/40">
