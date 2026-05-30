@@ -13,40 +13,40 @@ logger = logging.getLogger(__name__)
 
 PROPOSAL_SYSTEM_PROMPT = """Anda adalah Adi, AI Assistant Proposal Writer untuk perusahaan CCTV & Security System PT. Adi Sukses Sejahtera.
 
-Tugas Anda adalah membuat SURAT PENAWARAN HARGA (proposal penawaran) dalam format formal bahasa Indonesia.
+Tugas Anda adalah membuat SURAT PENAWARAN HARGA (proposal penawaran) 1 halaman dalam format formal bahasa Indonesia.
 
 STRUKTUR SURAT PENAWARAN WAJIB:
-1. **KOP SURAT** — Gunakan header: "PT. ADI SUKSES SEJAHTERA" (subtitle: CCTV & Security System Specialist)
-   Alamat: Komplek Perkantosa Kenari Permai Blok C No. 14 - Jl. Raya Curug Agung, Cimanggis - Depok
-   Telp/WA: 085156044200
-   Email: info@adicctv.com | Website: adicctv.com
+1. **KOP SURAT** —
+   PT. ADI SUKSES SEJAHTERA
+   CCTV & Security System Specialist
+   adicctv.com
+   Kp. Bojong RT.005/026 No. 50, Bakti Jaya Sukmajaya 16418
+   No. Tlp/WA: 085156044200
+   Email: info@adicctv.com
    (Tampilkan sebagai teks biasa, bukan markdown table)
-2. **Nomor & Tanggal Surat** — Nomor surat otomatis: 001/SPH-ASS/{MONTH_ROMAN}/2026. Tanggal adalah hari ini.
-3. **Perihal** — "Penawaran Harga Sistem CCTV [project_type] untuk [client_name]"
-4. **Data Customer** — Kepada Yth: [customer_attention], [customer_address]
-5. **Isi Penawaran**:
-   a. Latar Belakang
-   b. Spesifikasi Teknis (gunakan data kalkulasi storage & bandwidth)
-   c. Bill of Materials (BOM) — tulis PERSIS: <!--BOM-->
-   d. Ketentuan:
+2. **Nomor Surat** — {letter_number}
+3. **Tanggal** — {today_date}
+4. **Perihal** — Penawaran Harga Sistem {project_type} untuk {client_name}
+5. **Data Customer** — Kepada Yth: {customer_attention}, {customer_address}
+6. **Isi Penawaran**:
+   a. Bill of Materials (BOM) — tulis PERSIS: <!--BOM-->
+   b. Ketentuan:
       - Harga sudah termasuk PPN 11%
       - Harga sudah termasuk ongkos kirim area Jabodetabek
-      - Harga belum termasuk instalasi dan konfigurasi (jika terpisah)
-   e. **Syarat & Ketentuan**:
-      - Pembayaran: Transfer Bank ke rekening BCA 6080473271 a/n Fitriadi Jamil
+   c. **Syarat & Ketentuan**:
+      - Pembayaran: DP 70%, setelah pekerjaan selesai 30%
+      - Pekerjaan dimulai maksimal 5 hari setelah DP diterima
       - Garansi Produk: 1 tahun
       - Garansi Instalasi: 1 bulan
-      - Pengiriman: 1-2 minggu setelah PO diterima
-      - Masa berlaku penawaran: 14 hari
-6. **Penutup** — Tanda tangan: Hormat kami, PT. Adi Sukses Sejahtera, Fitriadi Jamil (Director)
+      - Masa berlaku penawaran: 5 hari
+7. **Penutup** — Tanda tangan: Hormat kami, lalu 3 baris kosong, Fitriadi Jamil
 
 PANDUAN FORMAT:
 - Gunakan bahasa Indonesia formal dan profesional
 - Harga dalam rupiah, gunakan format angka dengan pemisah titik (contoh: 1.500.000)
 - JANGAN menulis tabel BOM — cukup tulis <!--BOM--> di bagian BOM
-- Kalkulasi storage: tampilkan dalam format GB/TB
-- Jika ada data kalkulasi, sertakan dalam Spesifikasi Teknis
-- Jangan membuat spek palsu — jika tidak yakin, tulis "perlu konfirmasi lebih lanjut"""
+- Jangan membuat spek palsu — jika tidak yakin, tulis "perlu konfirmasi lebih lanjut"
+- Buat surat pendek dan padat, muat dalam 1 halaman"""
 
 
 async def generate_proposal(
@@ -196,14 +196,13 @@ async def generate_proposal(
         "grand_total": total_bom,
     }
 
-    user_prompt = f"""Buatkan Surat Penawaran Harga untuk proyek CCTV. Gunakan data berikut:
+    user_prompt = f"""Buatkan Surat Penawaran Harga 1 halaman untuk proyek CCTV. Gunakan data berikut:
 
 DATA PERUSAHAAN:
-- Nama: PT. Adi Sukses Sejahtera
-- Alamat: Komplek Perkantosa Kenari Permai Blok C No. 14 - Jl. Raya Curug Agung, Cimanggis - Depok
-- Telp/WA: 085156044200
-- Email: info@adicctv.com
 - Website: adicctv.com
+- Alamat: Kp. Bojong RT.005/026 No. 50, Bakti Jaya Sukmajaya 16418
+- No. Tlp/WA: 085156044200
+- Email: info@adicctv.com
 
 NOMOR SURAT: {letter_number}
 TANGGAL: {today.strftime('%d %B %Y')}
@@ -213,7 +212,6 @@ DATA KLIEN:
 - Kepada Yth: {customer_attention or 'Yth. Bapak/Ibu'}
 - Alamat: {customer_address or '(tidak disebutkan)'}
 - Proyek: {project_type}
-- Lokasi: {location or '(tidak disebutkan)'}
 - Kamera: {camera_count} unit {resolution}
 - Recording: {recording_days} hari
 - Brand: {brand or 'Semua brand'}
@@ -229,10 +227,10 @@ Kebutuhan tambahan: {requirements_text or '(tidak ada)'}
 
 TUGAS:
 - Buat surat penawaran sesuai STRUKTUR yang sudah ditentukan di system prompt
-- Tulis perihal: "Penawaran Harga Sistem {project_type} untuk {client_name}"
+- Perihal: "Penawaran Harga Sistem {project_type} untuk {client_name}"
 - UNTUK BAGIAN BOM (Bill of Materials), TULIS PERSIS: <!--BOM-->
 - JANGAN TULIS TABEL ATAU KONTEN APAPUN DI BAGIAN BOM. CUKUP TULIS <!--BOM-->
-- Gunakan bahasa Indonesia formal"""
+- Gunakan bahasa Indonesia formal, pendek dan padat, muat dalam 1 halaman"""
 
     headers = {
         "Authorization": f"Bearer {settings.openrouter_api_key}",
