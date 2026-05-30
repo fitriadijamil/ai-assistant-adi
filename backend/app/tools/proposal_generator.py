@@ -11,27 +11,42 @@ from app.tools.product_lookup import lookup_products_fn
 
 logger = logging.getLogger(__name__)
 
-PROPOSAL_SYSTEM_PROMPT = """Anda adalah Adi, AI Assistant Proposal Writer untuk perusahaan CCTV & Security System.
+PROPOSAL_SYSTEM_PROMPT = """Anda adalah Adi, AI Assistant Proposal Writer untuk perusahaan CCTV & Security System PT. Adi Sukses Sejahtera.
 
-Tugas Anda adalah membuat draft proposal teknis yang profesional dalam format markdown.
+Tugas Anda adalah membuat SURAT PENAWARAN HARGA (proposal penawaran) dalam format formal bahasa Indonesia.
 
-STRUKTUR PROPOSAL WAJIB:
-1. **Executive Summary** — Ringkasan eksekutif tentang kebutuhan klien dan solusi yang ditawarkan
-2. **Technical Overview** — Gambaran teknis termasuk hasil kalkulasi storage dan bandwidth
-3. **Recommended Bill of Materials (BOM)** — Tabel produk yang direkomendasikan dengan harga
-4. **Scope of Work (SOW)** — Lingkup pekerjaan instalasi dan konfigurasi
-5. **Kesimpulan** — Penutup dan rekomendasi
+STRUKTUR SURAT PENAWARAN WAJIB:
+1. **KOP SURAT** — Gunakan header: "PT. ADI SUKSES SEJAHTERA" (subtitle: CCTV & Security System Specialist)
+   Alamat: Komplek Perkantosa Kenari Permai Blok C No. 14 - Jl. Raya Curug Agung, Cimanggis - Depok
+   Telp/WA: 085156044200
+   Email: info@adicctv.com | Website: adicctv.com
+   (Tampilkan sebagai teks biasa, bukan markdown table)
+2. **Nomor & Tanggal Surat** — Nomor surat otomatis: 001/SPH-ASS/{MONTH_ROMAN}/2026. Tanggal adalah hari ini.
+3. **Perihal** — "Penawaran Harga Sistem CCTV [project_type] untuk [client_name]"
+4. **Data Customer** — Kepada Yth: [customer_attention], [customer_address]
+5. **Isi Penawaran**:
+   a. Latar Belakang
+   b. Spesifikasi Teknis (gunakan data kalkulasi storage & bandwidth)
+   c. Bill of Materials (BOM) — tulis PERSIS: <!--BOM-->
+   d. Ketentuan:
+      - Harga sudah termasuk PPN 11%
+      - Harga sudah termasuk ongkos kirim area Jabodetabek
+      - Harga belum termasuk instalasi dan konfigurasi (jika terpisah)
+   e. **Syarat & Ketentuan**:
+      - Pembayaran: Transfer Bank ke rekening BCA 6080473271 a/n Fitriadi Jamil
+      - Garansi Produk: 1 tahun
+      - Garansi Instalasi: 1 bulan
+      - Pengiriman: 1-2 minggu setelah PO diterima
+      - Masa berlaku penawaran: 14 hari
+6. **Penutup** — Tanda tangan: Hormat kami, PT. Adi Sukses Sejahtera, Fitriadi Jamil (Director)
 
 PANDUAN FORMAT:
 - Gunakan bahasa Indonesia formal dan profesional
-- Tabel BOM gunakan format markdown table dengan kolom: No, Deskripsi Produk, Qty, Harga Satuan (IDR), Subtotal (IDR)
 - Harga dalam rupiah, gunakan format angka dengan pemisah titik (contoh: 1.500.000)
-- Selalu gunakan heading level 2 (##) untuk setiap section
-- Gunakan tabel untuk BOM, jangan pakai bullet list
-- Kalkulasi storage: tampilkan dalam format GB dengan 2 desimal, lalu konversi ke TB jika > 1000 GB
-- Jika ada data kalkulasi, sertakan dalam Technical Overview
-- Jangan membuat spek palsu — jika tidak yakin, tulis "perlu konfirmasi lebih lanjut"
-- Akhiri dengan catatan bahwa harga dapat berubah"""
+- JANGAN menulis tabel BOM — cukup tulis <!--BOM--> di bagian BOM
+- Kalkulasi storage: tampilkan dalam format GB/TB
+- Jika ada data kalkulasi, sertakan dalam Spesifikasi Teknis
+- Jangan membuat spek palsu — jika tidak yakin, tulis "perlu konfirmasi lebih lanjut"""
 
 
 async def generate_proposal(
@@ -44,6 +59,8 @@ async def generate_proposal(
     requirements_text: str,
     selected_products: list[dict],
     brand: str = "",
+    customer_attention: str = "",
+    customer_address: str = "",
 ) -> dict:
     if not settings.openrouter_api_key:
         return {
@@ -51,6 +68,7 @@ async def generate_proposal(
             "storage_summary": None,
             "bandwidth_summary": None,
             "bom_data": None,
+            "letter_info": None,
         }
 
     storage_result = await storage_calculator_fn(
@@ -162,22 +180,43 @@ async def generate_proposal(
 
     bom_data = {"kategori_a": kategori_a, "kategori_b": kategori_b, "total_a": total_a, "total_b": total_b, "grand_total": total_bom}
 
-    user_prompt = f"""Buatkan proposal teknis untuk proyek CCTV dengan format markdown.
+    import datetime
+    today = datetime.date.today()
+    month_roman = {1:"I",2:"II",3:"III",4:"IV",5:"V",6:"VI",7:"VII",8:"VIII",9:"IX",10:"X",11:"XI",12:"XII"}
+    bulan_romawi = month_roman[today.month]
+    letter_number = f"001/SPH-ASS/{bulan_romawi}/{today.year}"
 
-STRUKTUR:
-## 1. Executive Summary
-## 2. Technical Overview
-## 3. Recommended Bill of Materials (BOM)
-## 4. Scope of Work (SOW)
-## 5. Kesimpulan
+    letter_info = {
+        "letter_number": letter_number,
+        "date": today.strftime("%d %B %Y"),
+        "customer_attention": customer_attention or "Yth. Bapak/Ibu",
+        "customer_address": customer_address or "",
+        "client_name": client_name,
+        "project_type": project_type,
+        "grand_total": total_bom,
+    }
+
+    user_prompt = f"""Buatkan Surat Penawaran Harga untuk proyek CCTV. Gunakan data berikut:
+
+DATA PERUSAHAAN:
+- Nama: PT. Adi Sukses Sejahtera
+- Alamat: Komplek Perkantosa Kenari Permai Blok C No. 14 - Jl. Raya Curug Agung, Cimanggis - Depok
+- Telp/WA: 085156044200
+- Email: info@adicctv.com
+- Website: adicctv.com
+
+NOMOR SURAT: {letter_number}
+TANGGAL: {today.strftime('%d %B %Y')}
 
 DATA KLIEN:
 - Nama: {client_name}
+- Kepada Yth: {customer_attention or 'Yth. Bapak/Ibu'}
+- Alamat: {customer_address or '(tidak disebutkan)'}
 - Proyek: {project_type}
-- Lokasi: {location or "(tidak disebutkan)"}
+- Lokasi: {location or '(tidak disebutkan)'}
 - Kamera: {camera_count} unit {resolution}
 - Recording: {recording_days} hari
-- Brand: {brand or "Semua brand"}
+- Brand: {brand or 'Semua brand'}
 
 HASIL KALKULASI:
 - Storage/hari: {storage_result['daily_storage_gb']} GB
@@ -186,14 +225,14 @@ HASIL KALKULASI:
 - Bandwidth: {bandwidth_result['total_bandwidth_mbps']} Mbps
 - Rekomendasi Switch: {bandwidth_result['recommendation']}
 
-Kebutuhan tambahan: {requirements_text or "(tidak ada)"}
+Kebutuhan tambahan: {requirements_text or '(tidak ada)'}
 
 TUGAS:
-- Tulis section 1 (Executive Summary), 2 (Technical Overview), 4 (SOW), 5 (Kesimpulan)
-- UNTUK SECTION 3 (Recommended Bill of Materials/BOM), TULIS PERSIS: <!--BOM-->
+- Buat surat penawaran sesuai STRUKTUR yang sudah ditentukan di system prompt
+- Tulis perihal: "Penawaran Harga Sistem {project_type} untuk {client_name}"
+- UNTUK BAGIAN BOM (Bill of Materials), TULIS PERSIS: <!--BOM-->
 - JANGAN TULIS TABEL ATAU KONTEN APAPUN DI BAGIAN BOM. CUKUP TULIS <!--BOM-->
-
-Gunakan bahasa Indonesia formal."""
+- Gunakan bahasa Indonesia formal"""
 
     headers = {
         "Authorization": f"Bearer {settings.openrouter_api_key}",
@@ -224,6 +263,7 @@ Gunakan bahasa Indonesia formal."""
                 "storage_summary": storage_result,
                 "bandwidth_summary": bandwidth_result,
                 "bom_data": bom_data,
+                "letter_info": letter_info,
             }
 
     except httpx.TimeoutException:
@@ -233,6 +273,7 @@ Gunakan bahasa Indonesia formal."""
             "storage_summary": storage_result,
             "bandwidth_summary": bandwidth_result,
             "bom_data": None,
+            "letter_info": None,
         }
     except httpx.HTTPStatusError as e:
         logger.error(f"OpenRouter returned {e.response.status_code}: {e.response.text}")
@@ -241,6 +282,7 @@ Gunakan bahasa Indonesia formal."""
             "storage_summary": storage_result,
             "bandwidth_summary": bandwidth_result,
             "bom_data": None,
+            "letter_info": None,
         }
     except Exception as e:
         logger.exception(f"Unexpected error in proposal generation: {e}")
@@ -249,4 +291,5 @@ Gunakan bahasa Indonesia formal."""
             "storage_summary": storage_result,
             "bandwidth_summary": bandwidth_result,
             "bom_data": None,
+            "letter_info": None,
         }

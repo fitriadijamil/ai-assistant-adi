@@ -13,6 +13,16 @@ export interface SendChatResponse {
   tool_calls: ToolCallResult[];
 }
 
+export interface LetterInfo {
+  letter_number: string;
+  date: string;
+  customer_attention: string;
+  customer_address: string;
+  client_name: string;
+  project_type: string;
+  grand_total: number;
+}
+
 export interface ProposalRequest {
   client_name: string;
   project_type: string;
@@ -23,6 +33,8 @@ export interface ProposalRequest {
   requirements_text: string;
   selected_products: Record<string, unknown>[];
   brand: string;
+  customer_attention: string;
+  customer_address: string;
 }
 
 export interface BomItem {
@@ -48,6 +60,7 @@ export interface ProposalResponse {
   storage_summary: Record<string, unknown> | null;
   bandwidth_summary: Record<string, unknown> | null;
   bom_data: BomData | null;
+  letter_info: LetterInfo | null;
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";

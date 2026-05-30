@@ -32,6 +32,8 @@ class ProposalRequest(BaseModel):
     requirements_text: str = ""
     selected_products: list[dict[str, Any]] = []
     brand: str = ""
+    customer_attention: str = ""
+    customer_address: str = ""
 
 
 class ProposalResponse(BaseModel):
@@ -39,3 +41,4 @@ class ProposalResponse(BaseModel):
     storage_summary: dict[str, Any] | None = None
     bandwidth_summary: dict[str, Any] | None = None
     bom_data: dict[str, Any] | None = None
+    letter_info: dict[str, Any] | None = None

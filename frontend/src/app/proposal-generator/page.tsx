@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { generateProposal, ProposalResponse } from "@/lib/api";
 import BomTable from "@/components/BomTable";
+import SuratPenawaran from "@/components/SuratPenawaran";
 
 const PROJECT_TYPES = [
   "Office CCTV Installation",
@@ -41,6 +42,8 @@ export default function ProposalGeneratorPage() {
   const [recordingDays, setRecordingDays] = useState(30);
   const [requirementsText, setRequirementsText] = useState("");
   const [brand, setBrand] = useState("Semua Brand");
+  const [customerAttention, setCustomerAttention] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ProposalResponse | null>(null);
   const [error, setError] = useState("");
@@ -65,6 +68,8 @@ export default function ProposalGeneratorPage() {
         requirements_text: requirementsText,
         selected_products: [],
         brand: brand === "Semua Brand" ? "" : brand,
+        customer_attention: customerAttention,
+        customer_address: customerAddress,
       });
       setResult(data);
     } catch (err) {
@@ -165,6 +170,28 @@ export default function ProposalGeneratorPage() {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="Jakarta, Indonesia"
+              />
+            </label>
+
+            <label className="form-control w-full">
+              <span className="label-text">Kepada Yth. (Jabatan/Nama)</span>
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                value={customerAttention}
+                onChange={(e) => setCustomerAttention(e.target.value)}
+                placeholder="Yth. Bapak/Ibu Manager"
+              />
+            </label>
+
+            <label className="form-control w-full">
+              <span className="label-text">Alamat Customer</span>
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                value={customerAddress}
+                onChange={(e) => setCustomerAddress(e.target.value)}
+                placeholder="Jl. Contoh No. 123, Jakarta"
               />
             </label>
 
@@ -271,6 +298,10 @@ export default function ProposalGeneratorPage() {
 
             {result ? (
               <div ref={previewRef} className="overflow-y-auto max-h-[70vh] proposal-content">
+                {result.letter_info && (
+                  <SuratPenawaran letterInfo={result.letter_info} />
+                )}
+
                 {result.storage_summary && (
                   <div className="grid grid-cols-2 gap-2 mb-4 p-3 bg-base-200 rounded-box print-stat">
                     <div className="stat p-1 min-h-0">
