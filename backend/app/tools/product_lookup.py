@@ -17,6 +17,7 @@ CATALOG_FILES = {
     "cables": CATALOG_DIR / "cables.json",
     "wireless_cameras": CATALOG_DIR / "wireless_cameras.json",
     "sd_cards": CATALOG_DIR / "sd_cards.json",
+    "hiview_accessories": CATALOG_DIR / "hiview_accessories.json",
 }
 
 HIVIEW_CATALOG_FILES = {
@@ -57,7 +58,7 @@ async def lookup_products_fn(
             "category": category,
             "count": 0,
             "products": [],
-            "note": f"Kategori '{category}' tidak ditemukan. Pilihan: cameras, nvr, poe_switches, hdd",
+            "note": f"Kategori '{category}' tidak ditemukan. Pilihan: cameras, nvr, poe_switches, hdd, analog_cameras, xvr, psu, cables, wireless_cameras, sd_cards, hiview_accessories",
         }
 
     products = products + hiview_products
@@ -114,8 +115,8 @@ product_lookup_tool = Tool(
         "properties": {
             "category": {
                 "type": "string",
-                "description": "Kategori produk: cameras, nvr, poe_switches, hdd, analog_cameras, xvr, psu, cables, wireless_cameras, sd_cards. Hasil mencakup harga MSRP (field: harga).",
-                "enum": ["cameras", "nvr", "poe_switches", "hdd", "analog_cameras", "xvr", "psu", "cables", "wireless_cameras", "sd_cards"],
+                "description": "Kategori produk: cameras, nvr, poe_switches, hdd, analog_cameras, xvr, psu, cables, wireless_cameras, sd_cards, hiview_accessories. Hasil mencakup harga MSRP (field: harga).",
+                "enum": ["cameras", "nvr", "poe_switches", "hdd", "analog_cameras", "xvr", "psu", "cables", "wireless_cameras", "sd_cards", "hiview_accessories"],
             },
             "brand": {
                 "type": "string",
