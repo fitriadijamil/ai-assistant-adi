@@ -1,0 +1,112 @@
+[
+  {
+    "id": "hv-c3w",
+    "nama": "C3W",
+    "brand": "Hiview",
+    "tipe": "Wireless",
+    "jenis": "Bullet",
+    "resolusi": "3MP",
+    "fitur": ["Wi-Fi 6", "Auto Tracking", "built-in Mic", "SD card 256GB"],
+    "harga_estimasi": 399000
+  },
+  {
+    "id": "hv-c5w",
+    "nama": "C5W",
+    "brand": "Hiview",
+    "tipe": "Wireless",
+    "jenis": "Bullet",
+    "resolusi": "5MP",
+    "fitur": ["Wi-Fi 6", "Auto Tracking", "built-in Mic", "SD card 256GB"],
+    "harga_estimasi": 588000
+  },
+  {
+    "id": "hv-c3w-pro",
+    "nama": "C3W-PRO",
+    "brand": "Hiview",
+    "tipe": "Wireless",
+    "jenis": "Bullet",
+    "resolusi": "3MP",
+    "fitur": ["Wi-Fi 6", "Auto Tracking", "one click proactive call", "SD card 256GB"],
+    "harga_estimasi": 495000
+  },
+  {
+    "id": "hv-c5w-pro",
+    "nama": "C5W-PRO",
+    "brand": "Hiview",
+    "tipe": "Wireless",
+    "jenis": "Bullet",
+    "resolusi": "5MP",
+    "fitur": ["Wi-Fi 6", "Auto Tracking", "one click proactive call", "SD card 256GB"],
+    "harga_estimasi": 721000
+  },
+  {
+    "id": "hv-c3w-dual",
+    "nama": "C3W-DUAL",
+    "brand": "Hiview",
+    "tipe": "Wireless",
+    "jenis": "Dual",
+    "resolusi": "3MP",
+    "fitur": ["Wi-Fi 6", "PT Lens", "built-in Mic", "SD card 256GB", "warm light"],
+    "harga_estimasi": 786000
+  },
+  {
+    "id": "hv-c5w-dual",
+    "nama": "C5W-DUAL",
+    "brand": "Hiview",
+    "tipe": "Wireless",
+    "jenis": "Dual",
+    "resolusi": "5MP",
+    "fitur": ["Wi-Fi 6", "PT Lens", "built-in Mic", "SD card 256GB", "warm light"],
+    "harga_estimasi": 843000
+  },
+  {
+    "id": "hv-pc3w",
+    "nama": "PC3W",
+    "brand": "Hiview",
+    "tipe": "Wireless",
+    "jenis": "PTZ",
+    "resolusi": "3MP",
+    "fitur": ["Wi-Fi 6", "360 Patrol", "Smart Dual Light", "AI Vehicle Detection", "IP66", "SD card 256GB"],
+    "harga_estimasi": 761320
+  },
+  {
+    "id": "hv-pc5w",
+    "nama": "PC5W",
+    "brand": "Hiview",
+    "tipe": "Wireless",
+    "jenis": "PTZ",
+    "resolusi": "5MP",
+    "fitur": ["Wi-Fi 6", "360 Patrol", "Smart Dual Light", "AI Vehicle Detection", "IP66", "SD card 256GB"],
+    "harga_estimasi": 945000
+  },
+  {
+    "id": "hv-pc3w-dual",
+    "nama": "PC3W-DUAL",
+    "brand": "Hiview",
+    "tipe": "Wireless",
+    "jenis": "PTZ",
+    "resolusi": "3MP",
+    "fitur": ["Wi-Fi 6", "PT Lens", "warm light", "built-in Mic", "SD card 256GB"],
+    "harga_estimasi": 1118000
+  },
+  {
+    "id": "hv-pc3w-dual-5mp",
+    "nama": "PC3W-DUAL",
+    "brand": "Hiview",
+    "tipe": "Wireless",
+    "jenis": "PTZ",
+    "resolusi": "5MP",
+    "fitur": ["Wi-Fi 6", "PT Lens", "warm light", "built-in Mic", "SD card 256GB"],
+    "harga_estimasi": 1378000
+  },
+  {
+    "id": "hv-pc4w-4g-solar",
+    "nama": "PC4W-4G-SOLAR",
+    "brand": "Hiview",
+    "tipe": "Wireless",
+    "jenis": "Solar",
+    "resolusi": "4MP",
+    "fitur": ["4G", "Solar powered", "PT Lens", "warm light", "SD card 256GB"],
+    "harga_estimasi": 3765000
+  }
+]

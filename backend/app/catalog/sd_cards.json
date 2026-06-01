@@ -1,0 +1,30 @@
+[
+  {
+    "id": "hv-mc32",
+    "nama": "MICRO SD 32GB",
+    "brand": "Hiview",
+    "kapasitas_gb": 32,
+    "harga_estimasi": 155000
+  },
+  {
+    "id": "hv-mc64",
+    "nama": "MICRO SD 64GB",
+    "brand": "Hiview",
+    "kapasitas_gb": 64,
+    "harga_estimasi": 195000
+  },
+  {
+    "id": "hv-mc128",
+    "nama": "MICRO SD 128GB",
+    "brand": "Hiview",
+    "kapasitas_gb": 128,
+    "harga_estimasi": 250000
+  },
+  {
+    "id": "hv-mc256",
+    "nama": "MICRO SD 256GB",
+    "brand": "Hiview",
+    "kapasitas_gb": 256,
+    "harga_estimasi": 688000
+  }
+]

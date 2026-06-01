@@ -20,6 +20,8 @@ export interface LetterInfo {
   customer_address: string;
   client_name: string;
   project_type: string;
+  camera_count_indoor: number;
+  camera_count_outdoor: number;
   grand_total: number;
 }
 
@@ -27,14 +29,21 @@ export interface ProposalRequest {
   client_name: string;
   project_type: string;
   location: string;
-  camera_count: number;
+  camera_count_indoor: number;
+  camera_count_outdoor: number;
   resolution: string;
+  system_type: string;
+  recording_type: string;
   recording_days: number;
-  requirements_text: string;
   selected_products: Record<string, unknown>[];
   brand: string;
+  kabel_utp_qty: number;
+  kabel_power_qty: number;
+  kabel_coaxial_qty: number;
+  use_pipa: boolean;
   customer_attention: string;
   customer_address: string;
+  sd_card_size: string;
 }
 
 export interface BomItem {

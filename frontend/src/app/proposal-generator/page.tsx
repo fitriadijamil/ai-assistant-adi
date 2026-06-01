@@ -7,14 +7,15 @@ import BomTable from "@/components/BomTable";
 import SuratPenawaran from "@/components/SuratPenawaran";
 
 const PROJECT_TYPES = [
-  "Office CCTV Installation",
-  "Warehouse Surveillance",
-  "Retail Store Security",
+  "Office",
+  "Warehouse",
+  "Retail & Ruko",
   "Parking Area Monitoring",
-  "Residential Security",
-  "School/University Campus",
-  "Factory/Industrial Area",
-  "Other",
+  "Rumah",
+  "Sekolah",
+  "Pabrik Industri",
+  "Gedung/Building",
+  "Rumah Sakit & Klinik",
 ];
 
 const RESOLUTIONS = ["2MP", "3MP", "4MP", "5MP", "8MP"];
@@ -37,11 +38,17 @@ export default function ProposalGeneratorPage() {
   const [clientName, setClientName] = useState("");
   const [projectType, setProjectType] = useState("");
   const [location, setLocation] = useState("");
-  const [cameraCount, setCameraCount] = useState(4);
+  const [cameraCountIndoor, setCameraCountIndoor] = useState(2);
+  const [cameraCountOutdoor, setCameraCountOutdoor] = useState(2);
   const [resolution, setResolution] = useState("4MP");
-  const [recordingDays, setRecordingDays] = useState(30);
-  const [requirementsText, setRequirementsText] = useState("");
+  const [systemType, setSystemType] = useState("ip");
+  const [recordingType, setRecordingType] = useState("full");
   const [brand, setBrand] = useState("Semua Brand");
+  const [kabelUtpQty, setKabelUtpQty] = useState(0);
+  const [kabelPowerQty, setKabelPowerQty] = useState(0);
+  const [kabelCoaxialQty, setKabelCoaxialQty] = useState(0);
+  const [usePipa, setUsePipa] = useState(true);
+  const [sdCardSize, setSdCardSize] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ProposalResponse | null>(null);
   const [error, setError] = useState("");
@@ -56,18 +63,31 @@ export default function ProposalGeneratorPage() {
     setResult(null);
 
     try {
+      const totalCameras = cameraCountIndoor + cameraCountOutdoor;
+      if (totalCameras < 1) {
+        setError("Minimal 1 kamera (indoor atau outdoor).");
+        setIsLoading(false);
+        return;
+      }
       const data = await generateProposal({
         client_name: clientName,
         project_type: projectType,
         location,
-        camera_count: cameraCount,
+        camera_count_indoor: cameraCountIndoor,
+        camera_count_outdoor: cameraCountOutdoor,
         resolution,
-        recording_days: recordingDays,
-        requirements_text: requirementsText,
+        system_type: systemType,
+        recording_type: recordingType,
+        recording_days: 30,
         selected_products: [],
         brand: brand === "Semua Brand" ? "" : brand,
+        kabel_utp_qty: kabelUtpQty || 0,
+        kabel_power_qty: kabelPowerQty || 0,
+        kabel_coaxial_qty: kabelCoaxialQty || 0,
+        use_pipa: usePipa,
         customer_attention: clientName,
         customer_address: location,
+        sd_card_size: sdCardSize,
       });
       setResult(data);
     } catch (err) {
@@ -172,15 +192,16 @@ export default function ProposalGeneratorPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <label className="form-control w-full">
-                <span className="label-text">Camera Count</span>
-                <input
-                  type="number"
-                  className="input input-bordered w-full"
-                  min={1}
-                  max={256}
-                  value={cameraCount}
-                  onChange={(e) => setCameraCount(Number(e.target.value))}
-                />
+                <span className="label-text">System Type</span>
+                <select
+                  className="select select-bordered w-full"
+                  value={systemType}
+                  onChange={(e) => setSystemType(e.target.value)}
+                >
+                  <option value="ip">IP (NVR + PoE)</option>
+                  <option value="analog">Analog (XVR + Coaxial)</option>
+                  <option value="wireless">Wireless (WiFi Camera)</option>
+                </select>
               </label>
 
               <label className="form-control w-full">
@@ -199,42 +220,88 @@ export default function ProposalGeneratorPage() {
               </label>
             </div>
 
-            <label className="form-control w-full">
-              <span className="label-text">Recording Days</span>
+            <div className="grid grid-cols-2 gap-4">
+              <label className="form-control w-full">
+                <span className="label-text">Camera Indoor Qty</span>
+                <input
+                  type="number"
+                  className="input input-bordered w-full"
+                  min={0}
+                  max={256}
+                  value={cameraCountIndoor}
+                  onChange={(e) => setCameraCountIndoor(Math.max(0, Number(e.target.value)))}
+                />
+              </label>
+              <label className="form-control w-full">
+                <span className="label-text">Camera Outdoor Qty</span>
+                <input
+                  type="number"
+                  className="input input-bordered w-full"
+                  min={0}
+                  max={256}
+                  value={cameraCountOutdoor}
+                  onChange={(e) => setCameraCountOutdoor(Math.max(0, Number(e.target.value)))}
+                />
+              </label>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {systemType !== "wireless" && (
+                <label className="form-control w-full">
+                  <span className="label-text">Recording Type</span>
+                  <select
+                    className="select select-bordered w-full"
+                    value={recordingType}
+                    onChange={(e) => setRecordingType(e.target.value)}
+                  >
+                    <option value="full">Full (24 Jam)</option>
+                    <option value="motion">Motion (12 Jam)</option>
+                  </select>
+                </label>
+              )}
+
+              <label className="form-control w-full">
+                <span className="label-text">Brand</span>
+                <select
+                  className="select select-bordered w-full"
+                  value={brand}
+                  onChange={(e) => setBrand(e.target.value)}
+                >
+                  {BRANDS.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <label className="flex items-center gap-2 cursor-pointer mt-2">
               <input
-                type="number"
-                className="input input-bordered w-full"
-                min={1}
-                max={365}
-                value={recordingDays}
-                onChange={(e) => setRecordingDays(Number(e.target.value))}
+                type="checkbox"
+                className="checkbox checkbox-primary checkbox-sm"
+                checked={usePipa}
+                onChange={(e) => setUsePipa(e.target.checked)}
               />
+              <span className="label-text">Conduit</span>
             </label>
 
-            <label className="form-control w-full">
-              <span className="label-text">Brand</span>
-              <select
-                className="select select-bordered w-full"
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
-              >
-                {BRANDS.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="form-control w-full">
-              <span className="label-text">Additional Requirements</span>
-              <textarea
-                className="textarea textarea-bordered w-full h-24"
-                value={requirementsText}
-                onChange={(e) => setRequirementsText(e.target.value)}
-                placeholder="e.g. Night vision required, IP66 rated, remote access via mobile app"
-              />
-            </label>
+            {systemType === "wireless" && (
+              <label className="form-control w-full">
+                <span className="label-text">SD Card</span>
+                <select
+                  className="select select-bordered w-full"
+                  value={sdCardSize}
+                  onChange={(e) => setSdCardSize(e.target.value)}
+                >
+                  <option value="">Tanpa SD Card</option>
+                  <option value="32GB">32GB - Rp 155.000</option>
+                  <option value="64GB">64GB - Rp 195.000</option>
+                  <option value="128GB">128GB - Rp 250.000</option>
+                  <option value="256GB">256GB - Rp 688.000</option>
+                </select>
+              </label>
+            )}
 
             {error && (
               <div className="alert alert-error">
@@ -242,8 +309,48 @@ export default function ProposalGeneratorPage() {
               </div>
             )}
 
+            <div className="grid grid-cols-3 gap-4">
+              <label className="form-control w-full">
+                <span className="label-text">Kabel UTP (M)</span>
+                <input
+                  type="number"
+                  className="input input-bordered w-full"
+                  min={0}
+                  value={kabelUtpQty}
+                  onChange={(e) => setKabelUtpQty(Math.max(0, Number(e.target.value)))}
+                  placeholder="0 = auto-calculate"
+                />
+              </label>
+              <label className="form-control w-full">
+                <span className="label-text">Kabel Power (M)</span>
+                <input
+                  type="number"
+                  className="input input-bordered w-full"
+                  min={0}
+                  value={kabelPowerQty}
+                  onChange={(e) => setKabelPowerQty(Math.max(0, Number(e.target.value)))}
+                  placeholder="0"
+                />
+              </label>
+              <label className="form-control w-full">
+                <span className="label-text">Kabel Coaxial (M)</span>
+                <input
+                  type="number"
+                  className="input input-bordered w-full"
+                  min={0}
+                  value={kabelCoaxialQty}
+                  onChange={(e) => setKabelCoaxialQty(Math.max(0, Number(e.target.value)))}
+                  placeholder="0"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
             <button
-              className="btn btn-primary w-full mt-2"
+              className="btn btn-primary w-full mb-4"
               onClick={handleGenerate}
               disabled={isLoading}
             >
@@ -256,79 +363,108 @@ export default function ProposalGeneratorPage() {
                 "Generate Proposal"
               )}
             </button>
-          </div>
-        </div>
 
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
             <div className="flex items-center justify-between">
-            <h2 className="card-title">Proposal Preview</h2>
-            {result && (
-              <button className="btn btn-outline btn-sm" onClick={handleDownloadPDF}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                Download PDF
-              </button>
-            )}
-          </div>
+              <h2 className="card-title">Proposal Preview</h2>
+              {result && (
+                <button className="btn btn-outline btn-sm" onClick={handleDownloadPDF}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Download PDF
+                </button>
+              )}
+            </div>
 
             {result ? (
-              <div ref={previewRef} className="overflow-y-auto max-h-[70vh] proposal-content">
-                {result.letter_info && (
-                  <SuratPenawaran letterInfo={result.letter_info} />
-                )}
-
-                {result.storage_summary && (
-                  <div className="grid grid-cols-2 gap-2 mb-4 p-3 bg-base-200 rounded-box print-stat">
-                    <div className="stat p-1 min-h-0">
-                      <div className="stat-title text-xs">Storage/Day</div>
-                      <div className="stat-value text-lg">
-                        {String(result.storage_summary.daily_storage_gb)} GB
+              <div ref={previewRef} className="overflow-y-auto max-h-[35vh] proposal-content">
+                {result.letter_info ? (
+                  <SuratPenawaran letterInfo={result.letter_info}>
+                    {result.storage_summary && (
+                      <div className="flex gap-2 items-center mb-2 p-1 bg-base-200 rounded-box text-xs">
+                        <span>Storage/Day: <strong>{String(result.storage_summary.daily_storage_gb)} GB</strong></span>
+                        <span className="text-base-content/30">|</span>
+                        <span>Recording: <strong>30 Hari</strong></span>
+                        <span className="text-base-content/30">|</span>
+                        <span>HDD: <strong>{String(result.storage_summary.recommended_hdd_tb)} TB</strong></span>
                       </div>
-                    </div>
-                    <div className="stat p-1 min-h-0">
-                      <div className="stat-title text-xs">Recommended HDD</div>
-                      <div className="stat-value text-lg">
-                        {String(result.storage_summary.recommended_hdd_tb)} TB
+                    )}
+                    {(() => {
+                      const parts = result.proposal_markdown.split("<!--BOM-->");
+                      return (
+                        <>
+                          {parts.map((part, i) => (
+                            <div key={i}>
+                              <div className="prose prose-sm max-w-none proposal-markdown">
+                                <ReactMarkdown
+                                  components={{
+                                    table: ({ children }) => (
+                                      <div className="overflow-x-auto">
+                                        <table className="table table-sm proposal-table">
+                                          {children}
+                                        </table>
+                                      </div>
+                                    ),
+                                  }}
+                                >
+                                  {part}
+                                </ReactMarkdown>
+                              </div>
+                              {i < parts.length - 1 && result.bom_data && (
+                                <BomTable data={result.bom_data} />
+                              )}
+                            </div>
+                          ))}
+                        </>
+                      );
+                    })()}
+                  </SuratPenawaran>
+                ) : (
+                  <>
+                    {result.storage_summary && (
+                      <div className="flex gap-2 items-center mb-2 p-1 bg-base-200 rounded-box text-xs">
+                        <span>Storage/Day: <strong>{String(result.storage_summary.daily_storage_gb)} GB</strong></span>
+                        <span className="text-base-content/30">|</span>
+                        <span>Recording: <strong>30 Hari</strong></span>
+                        <span className="text-base-content/30">|</span>
+                        <span>HDD: <strong>{String(result.storage_summary.recommended_hdd_tb)} TB</strong></span>
                       </div>
-                    </div>
-                  </div>
+                    )}
+                    {(() => {
+                      const parts = result.proposal_markdown.split("<!--BOM-->");
+                      return (
+                        <>
+                          {parts.map((part, i) => (
+                            <div key={i}>
+                              <div className="prose prose-sm max-w-none proposal-markdown">
+                                <ReactMarkdown
+                                  components={{
+                                    table: ({ children }) => (
+                                      <div className="overflow-x-auto">
+                                        <table className="table table-sm proposal-table">
+                                          {children}
+                                        </table>
+                                      </div>
+                                    ),
+                                  }}
+                                >
+                                  {part}
+                                </ReactMarkdown>
+                              </div>
+                              {i < parts.length - 1 && result.bom_data && (
+                                <BomTable data={result.bom_data} />
+                              )}
+                            </div>
+                          ))}
+                        </>
+                      );
+                    })()}
+                  </>
                 )}
-
-                {(() => {
-                  const parts = result.proposal_markdown.split("<!--BOM-->");
-                  return (
-                    <>
-                      {parts.map((part, i) => (
-                        <div key={i}>
-                          <div className="prose prose-sm max-w-none proposal-markdown">
-                            <ReactMarkdown
-                              components={{
-                                table: ({ children }) => (
-                                  <div className="overflow-x-auto">
-                                    <table className="table table-sm proposal-table">
-                                      {children}
-                                    </table>
-                                  </div>
-                                ),
-                              }}
-                            >
-                              {part}
-                            </ReactMarkdown>
-                          </div>
-                          {i < parts.length - 1 && result.bom_data && (
-                            <BomTable data={result.bom_data} />
-                          )}
-                        </div>
-                      ))}
-                    </>
-                  );
-                })()}
               </div>
             ) : (
-              <div className="flex items-center justify-center h-64 text-base-content/40">
+              <div className="flex items-center justify-center h-32 text-base-content/40">
                 <div className="text-center">
-                  <p className="text-4xl mb-2">📄</p>
-                  <p>Fill the form and generate a proposal</p>
+                  <p className="text-3xl mb-1">📄</p>
+                  <p className="text-sm">Fill the form and generate a proposal</p>
                 </div>
               </div>
             )}

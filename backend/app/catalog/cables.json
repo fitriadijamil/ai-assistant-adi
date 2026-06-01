@@ -1,0 +1,86 @@
+[
+  {
+    "nama": "UTP CAT 6 CCA HIVIEW HV-CCA6-305W(WHITE)",
+    "tipe": "HIVIEW HV-CCA6-305W(WHITE)",
+    "seri": "UTP CAT 6 CCA",
+    "keterangan": "305 m (1000 ft)/carton UTP CAT6, power over Ethernet, compatible\n with one cable\n\u00b7 CCA(Copper content 22%\u201331%)\n\u00b7 Customized PVC outer sheath; Have certain flame retardant properties\n\u00b7 Meet ANSI TIA 56",
+    "harga_msrp": 861800,
+    "harga_md": 695000,
+    "harga_non_md": 745000,
+    "harga_online": 765000,
+    "jenis": "UTP Cable",
+    "sistem": "ip"
+  },
+  {
+    "nama": "UTP CAT 6 OFC HIVIEW 920I COPPER CAT6",
+    "tipe": "HIVIEW 920I COPPER CAT6",
+    "seri": "UTP CAT 6 OFC",
+    "keterangan": "305 m (1000 ft)/carton UTP CAT6, power over Ethernet, compatible\n with one cable\n\u00b7 High-purity oxygen-free copper conductor\n\u00b7 Customized PVC outer sheath; Have certain flame retardant properties\n\u00b7 Mee",
+    "harga_msrp": 1959200,
+    "harga_md": 1750000,
+    "harga_non_md": 1800000,
+    "harga_online": 1850000,
+    "jenis": "UTP Cable",
+    "sistem": "ip"
+  },
+  {
+    "nama": "KABEL COAXIAL HIVIEW RG59+P 300 \nC SERIES",
+    "tipe": "HIVIEW RG59+P 300 \nC SERIES",
+    "seri": "KABEL COAXIAL",
+    "keterangan": ". Specialized design for Surveillance and Security System\nBest Protection with Braid Coverage up to 95%\n- Providing Higher Resolution with Definition Transmission Cable\n- 300 Meter Cable Length\n- Easy",
+    "harga_msrp": 837000,
+    "harga_md": 675000,
+    "harga_non_md": 723000,
+    "harga_online": 743000,
+    "jenis": "Coaxial Cable",
+    "sistem": "analog"
+  },
+  {
+    "nama": "KABEL COAXIAL KABEL RG59+300 REGULER",
+    "tipe": "KABEL RG59+300 REGULER",
+    "seri": "KABEL COAXIAL",
+    "keterangan": ". Specialized design for Surveillance and Security System\n- Best Protection with Braid Coverage up to 95%\n- Providing Higher Resolution with Definition Transmission Cable\n- 300 Meter Cable Length\n- 75",
+    "harga_msrp": 930000,
+    "harga_md": 750000,
+    "harga_non_md": 803000,
+    "harga_online": 825000,
+    "jenis": "Coaxial Cable",
+    "sistem": "analog"
+  },
+  {
+    "nama": "KABEL COAXIAL HIVIEW RG59+P 100 METER",
+    "tipe": "HIVIEW RG59+P 100 METER",
+    "seri": "KABEL COAXIAL",
+    "keterangan": ". Specialized design for Surveillance and Security System\n- Best Protection with Braid Coverage up to 95%\n- Providing Higher Resolution with Definition Transmission Cable\n- 100 Meter Cable Length\n- 75",
+    "harga_msrp": 316000,
+    "harga_md": 255000,
+    "harga_non_md": 273000,
+    "harga_online": 282000,
+    "jenis": "Coaxial Cable",
+    "sistem": "analog"
+  },
+  {
+    "nama": "KABEL COAXIAL HIVIEW RG59+P 50 METER",
+    "tipe": "HIVIEW RG59+P 50 METER",
+    "seri": "KABEL COAXIAL",
+    "keterangan": ". Specialized design for Surveillance and Security System\n- Best Protection with Braid Coverage up to 95%\n- Providing Higher Resolution with Definition Transmission Cable\n- 50 Meter Cable Length\n- 75 ",
+    "harga_msrp": 174000,
+    "harga_md": 140000,
+    "harga_non_md": 149000,
+    "harga_online": 154000,
+    "jenis": "Coaxial Cable",
+    "sistem": "analog"
+  },
+  {
+    "nama": "KABEL COAXIAL HIVIEW RG6+P 300 METER",
+    "tipe": "HIVIEW RG6+P 300 METER",
+    "seri": "KABEL COAXIAL",
+    "keterangan": ". Specialized design for Surveillance and Security System\n- Best Protection with Braid Coverage up to 95%\n- Providing Higher Resolution with Definition Transmission Cable\n- 300 Meter Cable Length\n- 75",
+    "harga_msrp": 979000,
+    "harga_md": 790000,
+    "harga_non_md": 845000,
+    "harga_online": 869000,
+    "jenis": "Coaxial Cable",
+    "sistem": "analog"
+  }
+]

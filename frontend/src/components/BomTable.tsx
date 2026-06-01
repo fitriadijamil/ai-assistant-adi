@@ -23,11 +23,6 @@ function fmt(n: number): string {
 }
 
 export default function BomTable({ data }: { data: BomData }) {
-  const items = [
-    ...data.kategori_a.map((i) => ({ ...i, cat: "A" as const })),
-    ...data.kategori_b.map((i) => ({ ...i, cat: "B" as const })),
-  ];
-
   return (
     <div className="overflow-x-auto my-4">
       <table
@@ -47,15 +42,6 @@ export default function BomTable({ data }: { data: BomData }) {
             <th style={{ border: "1px solid #000", padding: "6px 4px", width: "22%" }} colSpan={2}>Qty</th>
             <th style={{ border: "1px solid #000", padding: "6px 4px", width: "15%" }}>Harga</th>
             <th style={{ border: "1px solid #000", padding: "6px 4px", width: "15%" }}>Total</th>
-          </tr>
-          <tr style={{ background: "#dbeafe", fontWeight: "bold", textAlign: "center" }}>
-            <th style={{ border: "1px solid #000", padding: "4px" }}></th>
-            <th style={{ border: "1px solid #000", padding: "4px" }}></th>
-            <th style={{ border: "1px solid #000", padding: "4px" }}></th>
-            <th style={{ border: "1px solid #000", padding: "4px", width: "11%" }}>Angka</th>
-            <th style={{ border: "1px solid #000", padding: "4px", width: "11%" }}>Satuan</th>
-            <th style={{ border: "1px solid #000", padding: "4px" }}></th>
-            <th style={{ border: "1px solid #000", padding: "4px" }}></th>
           </tr>
         </thead>
         <tbody>
@@ -79,9 +65,7 @@ export default function BomTable({ data }: { data: BomData }) {
             <td colSpan={5} style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontWeight: "bold" }}>
               Subtotal A
             </td>
-            <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontWeight: "bold" }}>
-              {fmt(data.total_a)}
-            </td>
+            <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right" }}></td>
             <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontWeight: "bold" }}>
               {fmt(data.total_a)}
             </td>
@@ -107,9 +91,7 @@ export default function BomTable({ data }: { data: BomData }) {
             <td colSpan={5} style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontWeight: "bold" }}>
               Subtotal B
             </td>
-            <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontWeight: "bold" }}>
-              {fmt(data.total_b)}
-            </td>
+            <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right" }}></td>
             <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontWeight: "bold" }}>
               {fmt(data.total_b)}
             </td>
@@ -119,9 +101,7 @@ export default function BomTable({ data }: { data: BomData }) {
             <td colSpan={5} style={{ border: "1px solid #000", padding: "6px 4px", textAlign: "right" }}>
               Total
             </td>
-            <td style={{ border: "1px solid #000", padding: "6px 4px", textAlign: "right" }}>
-              {fmt(data.grand_total)}
-            </td>
+            <td style={{ border: "1px solid #000", padding: "6px 4px", textAlign: "right" }}></td>
             <td style={{ border: "1px solid #000", padding: "6px 4px", textAlign: "right" }}>
               {fmt(data.grand_total)}
             </td>

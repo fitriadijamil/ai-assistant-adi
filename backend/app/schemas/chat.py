@@ -26,14 +26,21 @@ class ProposalRequest(BaseModel):
     client_name: str
     project_type: str
     location: str = ""
-    camera_count: int
+    camera_count_indoor: int = 0
+    camera_count_outdoor: int = 0
     resolution: str = "4MP"
+    system_type: str = "ip"
+    recording_type: str = "full"
     recording_days: int = 30
-    requirements_text: str = ""
     selected_products: list[dict[str, Any]] = []
     brand: str = ""
+    kabel_utp_qty: int = 0
+    kabel_power_qty: int = 0
+    kabel_coaxial_qty: int = 0
+    use_pipa: bool = True
     customer_attention: str = ""
     customer_address: str = ""
+    sd_card_size: str = ""
 
 
 class ProposalResponse(BaseModel):

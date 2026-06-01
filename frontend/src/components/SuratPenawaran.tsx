@@ -1,15 +1,17 @@
+import { ReactNode } from "react";
 import { LetterInfo } from "@/lib/api";
 
 interface SuratPenawaranProps {
   letterInfo: LetterInfo;
+  children?: ReactNode;
 }
 
 function formatPrice(val: number): string {
   return `Rp ${val.toLocaleString("id-ID")}`;
 }
 
-export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
-  const { letter_number, date, customer_attention, customer_address, client_name, project_type, grand_total } = letterInfo;
+export default function SuratPenawaran({ letterInfo, children }: SuratPenawaranProps) {
+  const { letter_number, date, customer_address, client_name, project_type, camera_count_indoor, camera_count_outdoor, grand_total } = letterInfo;
 
   return (
     <div className="surat-wrapper mb-6">
@@ -20,14 +22,28 @@ export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
           line-height: 1.5;
         }
         .surat-wrapper .kop {
-          text-align: center;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
           border-bottom: 2px solid #000;
           padding-bottom: 8px;
           margin-bottom: 12px;
         }
+        .surat-wrapper .kop .kop-logo {
+          flex-shrink: 0;
+        }
+        .surat-wrapper .kop .kop-img {
+          width: auto;
+          height: 110px;
+          display: block;
+        }
         .surat-wrapper .kop .info {
           font-size: 10pt;
-          margin-top: 4px;
+          text-align: right;
+        }
+        .surat-wrapper .kop .info .info-title {
+          font-weight: bold;
+          font-size: 12pt;
         }
         .surat-wrapper .kop .info div {
           margin: 1px 0;
@@ -49,7 +65,6 @@ export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
           margin: 8px 0;
         }
         .surat-wrapper .pembuka {
-          font-weight: bold;
           margin: 6px 0;
           text-align: justify;
         }
@@ -89,10 +104,14 @@ export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
       `}</style>
 
       <div className="kop">
+        <div className="kop-logo">
+          <img src="/logo.webp" alt="adicctv.com" className="kop-img" />
+        </div>
         <div className="info">
-          <div>adicctv.com</div>
+          <div className="info-title">adicctv.com</div>
           <div>Alamat : Kp. Bojong RT.005/026 Bakti Jaya Sukmajaya Depok 16418</div>
           <div>Email : fitriadijamil@gmail.com</div>
+          <div>Tlp/WA : 0851 5604 4200</div>
         </div>
       </div>
 
@@ -100,7 +119,7 @@ export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
         <div className="meta-line">Nomor Surat: {letter_number}</div>
         <div className="meta-line">{date}</div>
 
-        <div className="perihal">Perihal: Penawaran Harga Sistem {project_type} untuk {client_name}</div>
+        <div className="perihal">Perihal: Penawaran Harga Sistem {project_type}</div>
 
         <div className="kepada">
           <div>Kepada Yth,</div>
@@ -109,12 +128,14 @@ export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
         </div>
 
         <div className="pembuka">
-          Bersama surat ini, kami dari adicctv.com mengajukan penawaran harga untuk pengadaan sistem {project_type} sebagai berikut:
+          Bersama surat ini, kami dari adicctv.com mengajukan penawaran harga untuk pengadaan CCTV di {project_type} sebagai berikut:{camera_count_indoor > 0 || camera_count_outdoor > 0 ? ` (${camera_count_indoor} Indoor + ${camera_count_outdoor} Outdoor)` : ''}
         </div>
 
         <div style={{ marginBottom: "6px" }}>
           <strong>{grand_total > 0 ? `Total Harga: ${formatPrice(grand_total)}` : ""}</strong>
         </div>
+
+        {children}
 
         <div className="syarat">
           <h3>Syarat &amp; Ketentuan:</h3>
@@ -129,6 +150,10 @@ export default function SuratPenawaran({ letterInfo }: SuratPenawaranProps) {
               <tr><td>Ongkos Kirim</td><td>: Sudah termasuk area Jabodetabek</td></tr>
             </tbody>
           </table>
+        </div>
+
+        <div style={{ marginTop: "8px", fontSize: "10pt", fontWeight: "bold", fontStyle: "italic" }}>
+          Pembayaran via transfer Bank BCA 6080473271 a.n. Fitriadi Jamil
         </div>
 
         <div className="ttd">

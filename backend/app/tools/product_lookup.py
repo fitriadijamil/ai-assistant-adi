@@ -11,6 +11,12 @@ CATALOG_FILES = {
     "nvr": CATALOG_DIR / "nvr.json",
     "poe_switches": CATALOG_DIR / "poe_switches.json",
     "hdd": CATALOG_DIR / "hdd.json",
+    "analog_cameras": CATALOG_DIR / "analog_cameras.json",
+    "xvr": CATALOG_DIR / "xvr.json",
+    "psu": CATALOG_DIR / "psu.json",
+    "cables": CATALOG_DIR / "cables.json",
+    "wireless_cameras": CATALOG_DIR / "wireless_cameras.json",
+    "sd_cards": CATALOG_DIR / "sd_cards.json",
 }
 
 HIVIEW_CATALOG_FILES = {
@@ -66,14 +72,16 @@ async def lookup_products_fn(
     if keyword:
         kw = keyword.lower()
         filtered = []
-        search_fields = ["nama", "brand", "jenis", "tipe", "resolusi"]
+        search_fields = ["nama", "brand", "jenis", "tipe", "resolusi", "kapasitas_gb"]
         for p in products:
             for field in search_fields:
-                if kw in p.get(field, "").lower():
+                val = p.get(field)
+                if val is not None and kw in str(val).lower():
                     filtered.append(p)
                     break
             else:
-                if kw in str(p.get("fitur", [])).lower():
+                fitur = p.get("fitur")
+                if fitur is not None and kw in str(fitur).lower():
                     filtered.append(p)
         products = filtered
 
@@ -100,14 +108,14 @@ async def lookup_products_fn(
 
 product_lookup_tool = Tool(
     name="product_lookup",
-    description="Cari produk CCTV dari katalog berdasarkan kategori, brand, dan kata kunci. Gunakan tool ini saat user menanyakan rekomendasi produk tertentu.",
+    description="Cari produk CCTV dari katalog berdasarkan kategori, brand, dan kata kunci.",
     input_schema={
         "type": "object",
         "properties": {
             "category": {
                 "type": "string",
-                "description": "Kategori produk. Pilihan: cameras, nvr, poe_switches, hdd. Hasil mencakup harga MSRP (field: harga).",
-                "enum": ["cameras", "nvr", "poe_switches", "hdd"],
+                "description": "Kategori produk: cameras, nvr, poe_switches, hdd, analog_cameras, xvr, psu, cables, wireless_cameras, sd_cards. Hasil mencakup harga MSRP (field: harga).",
+                "enum": ["cameras", "nvr", "poe_switches", "hdd", "analog_cameras", "xvr", "psu", "cables", "wireless_cameras", "sd_cards"],
             },
             "brand": {
                 "type": "string",
@@ -115,7 +123,7 @@ product_lookup_tool = Tool(
             },
             "keyword": {
                 "type": "string",
-                "description": "Kata kunci pencarian tambahan. Misal: '4MP', 'bullet', 'poe', 'entry level'. Mencocokkan nama, brand, fitur, jenis, dan tipe produk.",
+                "description": "Kata kunci pencarian tambahan. Misal: '4MP', 'bullet', '1080P', '8 channel'. Mencocokkan nama, brand, fitur, jenis, dan tipe produk.",
             },
         },
         "required": ["category"],

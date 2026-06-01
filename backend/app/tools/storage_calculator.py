@@ -1,12 +1,13 @@
 from app.tools.registry import Tool, registry
 
 RESOLUTION_BITRATES = {
-    "2MP": 4_000_000,
-    "3MP": 6_000_000,
-    "4MP": 8_000_000,
-    "5MP": 10_000_000,
-    "8MP": 16_000_000,
-    "12MP": 24_000_000,
+    # H.265 Medium quality @ 30fps (based on Seagate calculator)
+    "2MP": 1_700_000,
+    "3MP": 2_550_000,
+    "4MP": 3_400_000,
+    "5MP": 4_250_000,
+    "8MP": 6_800_000,
+    "12MP": 10_200_000,
 }
 
 
@@ -15,28 +16,31 @@ async def storage_calculator_fn(
     resolution: str,
     fps: int = 30,
     recording_days: int = 30,
+    recording_type: str = "full",
     bitrate: int | None = None,
 ) -> dict:
     if bitrate is None:
-        bitrate = RESOLUTION_BITRATES.get(resolution.upper(), 8_000_000)
+        bitrate = RESOLUTION_BITRATES.get(resolution.upper(), 3_400_000)
 
-    daily_bytes = camera_count * bitrate * (fps / 30) * 86400
-    daily_gb = daily_bytes / (1024**3)
-    monthly_gb = daily_gb * recording_days
-    recommended_hdd_gb = monthly_gb * 1.2
+    hours_per_day = 24 if recording_type == "full" else 12
+
+    total_bits = camera_count * bitrate * (fps / 30) * hours_per_day * 3600 * recording_days
+    total_bytes = total_bits / 8
+    total_gb = total_bytes / (1000 ** 3)
+    daily_gb = total_gb / recording_days
 
     return {
         "daily_storage_gb": round(daily_gb, 2),
-        "monthly_storage_gb": round(monthly_gb, 2),
-        "recommended_hdd_gb": round(recommended_hdd_gb, 2),
-        "recommended_hdd_tb": round(recommended_hdd_gb / 1024, 1),
+        "monthly_storage_gb": round(total_gb, 2),
+        "recommended_hdd_gb": round(total_gb, 2),
+        "recommended_hdd_tb": round(total_gb / 1000, 2),
         "bitrate_used_bps": bitrate,
     }
 
 
 storage_calculator_tool = Tool(
     name="storage_calculator",
-    description="Calculate HDD storage requirements for CCTV cameras based on resolution, frame rate, and recording duration.",
+    description="Calculate HDD storage requirements for CCTV cameras (H.265)",
     input_schema={
         "type": "object",
         "properties": {
@@ -55,6 +59,10 @@ storage_calculator_tool = Tool(
             "recording_days": {
                 "type": "integer",
                 "description": "Number of recording days (default 30)",
+            },
+            "recording_type": {
+                "type": "string",
+                "description": "Recording type: 'full' (24h/day) or 'motion' (12h/day)",
             },
             "bitrate": {
                 "type": "integer",
