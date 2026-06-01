@@ -2,6 +2,7 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 
+from app.config_loader import load_config
 from app.schemas.chat import (
     ChatRequest,
     ChatResponse,
@@ -110,3 +111,8 @@ async def bandwidth_calculator(
         bitrate_per_camera=bitrate_per_camera,
         simultaneous_streams=simultaneous_streams,
     )
+
+
+@router.get("/config")
+async def get_config():
+    return load_config()

@@ -5,35 +5,10 @@ import ReactMarkdown from "react-markdown";
 import { generateProposal, ProposalResponse } from "@/lib/api";
 import BomTable from "@/components/BomTable";
 import SuratPenawaran from "@/components/SuratPenawaran";
-
-const PROJECT_TYPES = [
-  "Office",
-  "Warehouse",
-  "Retail & Ruko",
-  "Parking Area Monitoring",
-  "Rumah",
-  "Sekolah",
-  "Pabrik Industri",
-  "Gedung/Building",
-  "Rumah Sakit & Klinik",
-];
-
-const RESOLUTIONS = ["2MP", "3MP", "4MP", "5MP", "8MP"];
-
-const BRANDS = [
-  "Semua Brand",
-  "Hikvision",
-  "Dahua",
-  "Uniview",
-  "Hiview",
-  "Ezviz",
-  "TP-Link Tapo",
-  "Imou",
-  "Bardi",
-  "Hilook",
-];
+import { useBusinessConfig } from "@/lib/useBusinessConfig";
 
 export default function ProposalGeneratorPage() {
+  const { config, loading: configLoading } = useBusinessConfig();
   const previewRef = useRef<HTMLDivElement>(null);
   const [clientName, setClientName] = useState("");
   const [projectType, setProjectType] = useState("");
@@ -43,7 +18,7 @@ export default function ProposalGeneratorPage() {
   const [resolution, setResolution] = useState("4MP");
   const [systemType, setSystemType] = useState("ip");
   const [recordingType, setRecordingType] = useState("full");
-  const [brand, setBrand] = useState("Semua Brand");
+  const [brand, setBrand] = useState("");
   const [kabelUtpQty, setKabelUtpQty] = useState(0);
   const [kabelPowerQty, setKabelPowerQty] = useState(0);
   const [kabelCoaxialQty, setKabelCoaxialQty] = useState(0);
@@ -69,9 +44,11 @@ export default function ProposalGeneratorPage() {
         setIsLoading(false);
         return;
       }
+      const selPt = projectTypes.find((pt) => pt.id === projectType);
+      const projectTypeLabel = selPt?.label || projectType;
       const data = await generateProposal({
         client_name: clientName,
-        project_type: projectType,
+        project_type: projectTypeLabel,
         location,
         camera_count_indoor: cameraCountIndoor,
         camera_count_outdoor: cameraCountOutdoor,
@@ -80,7 +57,7 @@ export default function ProposalGeneratorPage() {
         recording_type: recordingType,
         recording_days: 30,
         selected_products: [],
-        brand: brand === "Semua Brand" ? "" : brand,
+        brand: brand,
         kabel_utp_qty: kabelUtpQty || 0,
         kabel_power_qty: kabelPowerQty || 0,
         kabel_coaxial_qty: kabelCoaxialQty || 0,
@@ -102,6 +79,16 @@ export default function ProposalGeneratorPage() {
   const handleDownloadPDF = () => {
     window.print();
   };
+
+  const projectTypes = config?.project_types || [];
+  const resolutions = config?.resolutions || ["2MP", "3MP", "4MP", "5MP", "8MP"];
+  const brands = config?.brands || [];
+  const systemTypes = config?.system_types || [];
+  const sdCardOptions = config?.sd_card_options || [];
+  const selSystem = systemTypes.find((st) => st.id === systemType);
+
+  const businessName = config?.business?.name || "adicctv.com";
+  const businessTagline = config?.business?.tagline || "Service & Instalasi Bergaransi";
 
   return (
     <>
@@ -141,9 +128,9 @@ export default function ProposalGeneratorPage() {
     `}</style>
     <div className="max-w-5xl mx-auto p-4 md:p-8">
       <header className="mb-8 print-header">
-        <div className="text-3xl font-bold tracking-tight">adicctv.com</div>
+        <div className="text-3xl font-bold tracking-tight">{businessName}</div>
         <p className="text-base-content/60 text-sm">
-          Service &amp; Instalasi Bergaransi
+          {businessTagline}
         </p>
       </header>
 
@@ -151,6 +138,10 @@ export default function ProposalGeneratorPage() {
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Client & Project Data</h2>
+
+            {configLoading && (
+              <div className="text-sm text-base-content/60">Loading configuration...</div>
+            )}
 
             <label className="form-control w-full">
               <span className="label-text">Client Name *</span>
@@ -171,9 +162,9 @@ export default function ProposalGeneratorPage() {
                 onChange={(e) => setProjectType(e.target.value)}
               >
                 <option value="">Select project type...</option>
-                {PROJECT_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
+                {projectTypes.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.label}
                   </option>
                 ))}
               </select>
@@ -196,11 +187,16 @@ export default function ProposalGeneratorPage() {
                 <select
                   className="select select-bordered w-full"
                   value={systemType}
-                  onChange={(e) => setSystemType(e.target.value)}
+                  onChange={(e) => {
+                    setSystemType(e.target.value);
+                    setSdCardSize("");
+                  }}
                 >
-                  <option value="ip">IP (NVR + PoE)</option>
-                  <option value="analog">Analog (XVR + Coaxial)</option>
-                  <option value="wireless">Wireless (WiFi Camera)</option>
+                  {systemTypes.map((st) => (
+                    <option key={st.id} value={st.id}>
+                      {st.label}
+                    </option>
+                  ))}
                 </select>
               </label>
 
@@ -211,7 +207,7 @@ export default function ProposalGeneratorPage() {
                   value={resolution}
                   onChange={(e) => setResolution(e.target.value)}
                 >
-                  {RESOLUTIONS.map((r) => (
+                  {resolutions.map((r) => (
                     <option key={r} value={r}>
                       {r}
                     </option>
@@ -246,7 +242,7 @@ export default function ProposalGeneratorPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              {systemType !== "wireless" && (
+              {selSystem && !selSystem.has_sd_card && (
                 <label className="form-control w-full">
                   <span className="label-text">Recording Type</span>
                   <select
@@ -267,7 +263,8 @@ export default function ProposalGeneratorPage() {
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
                 >
-                  {BRANDS.map((b) => (
+                  <option value="">Semua Brand</option>
+                  {brands.map((b) => (
                     <option key={b} value={b}>
                       {b}
                     </option>
@@ -286,7 +283,7 @@ export default function ProposalGeneratorPage() {
               <span className="label-text">Conduit</span>
             </label>
 
-            {systemType === "wireless" && (
+            {selSystem && selSystem.has_sd_card && sdCardOptions.length > 0 && (
               <label className="form-control w-full">
                 <span className="label-text">SD Card</span>
                 <select
@@ -294,11 +291,11 @@ export default function ProposalGeneratorPage() {
                   value={sdCardSize}
                   onChange={(e) => setSdCardSize(e.target.value)}
                 >
-                  <option value="">Tanpa SD Card</option>
-                  <option value="32GB">32GB - Rp 155.000</option>
-                  <option value="64GB">64GB - Rp 195.000</option>
-                  <option value="128GB">128GB - Rp 250.000</option>
-                  <option value="256GB">256GB - Rp 688.000</option>
+                  {sdCardOptions.map((opt) => (
+                    <option key={opt.size_gb} value={opt.size_gb > 0 ? `${opt.size_gb}GB` : ""}>
+                      {opt.label}
+                    </option>
+                  ))}
                 </select>
               </label>
             )}
@@ -310,39 +307,45 @@ export default function ProposalGeneratorPage() {
             )}
 
             <div className="grid grid-cols-3 gap-4">
-              <label className="form-control w-full">
-                <span className="label-text">Kabel UTP (M)</span>
-                <input
-                  type="number"
-                  className="input input-bordered w-full"
-                  min={0}
-                  value={kabelUtpQty}
-                  onChange={(e) => setKabelUtpQty(Math.max(0, Number(e.target.value)))}
-                  placeholder="0 = auto-calculate"
-                />
-              </label>
-              <label className="form-control w-full">
-                <span className="label-text">Kabel Power (M)</span>
-                <input
-                  type="number"
-                  className="input input-bordered w-full"
-                  min={0}
-                  value={kabelPowerQty}
-                  onChange={(e) => setKabelPowerQty(Math.max(0, Number(e.target.value)))}
-                  placeholder="0"
-                />
-              </label>
-              <label className="form-control w-full">
-                <span className="label-text">Kabel Coaxial (M)</span>
-                <input
-                  type="number"
-                  className="input input-bordered w-full"
-                  min={0}
-                  value={kabelCoaxialQty}
-                  onChange={(e) => setKabelCoaxialQty(Math.max(0, Number(e.target.value)))}
-                  placeholder="0"
-                />
-              </label>
+              {selSystem && selSystem.has_utp_cable && (
+                <label className="form-control w-full">
+                  <span className="label-text">Kabel UTP (M)</span>
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    min={0}
+                    value={kabelUtpQty}
+                    onChange={(e) => setKabelUtpQty(Math.max(0, Number(e.target.value)))}
+                    placeholder="0 = auto"
+                  />
+                </label>
+              )}
+              {selSystem && selSystem.has_power_cable && (
+                <label className="form-control w-full">
+                  <span className="label-text">Kabel Power (M)</span>
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    min={0}
+                    value={kabelPowerQty}
+                    onChange={(e) => setKabelPowerQty(Math.max(0, Number(e.target.value)))}
+                    placeholder="0"
+                  />
+                </label>
+              )}
+              {selSystem && selSystem.has_coaxial_cable && (
+                <label className="form-control w-full">
+                  <span className="label-text">Kabel Coaxial (M)</span>
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    min={0}
+                    value={kabelCoaxialQty}
+                    onChange={(e) => setKabelCoaxialQty(Math.max(0, Number(e.target.value)))}
+                    placeholder="0"
+                  />
+                </label>
+              )}
             </div>
           </div>
         </div>
@@ -352,7 +355,7 @@ export default function ProposalGeneratorPage() {
             <button
               className="btn btn-primary w-full mb-4"
               onClick={handleGenerate}
-              disabled={isLoading}
+              disabled={isLoading || configLoading}
             >
               {isLoading ? (
                 <>

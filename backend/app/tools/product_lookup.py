@@ -3,27 +3,23 @@ import os
 from pathlib import Path
 
 from app.tools.registry import Tool, registry
+from app.config_loader import load_config, get_catalog_path
 
-CATALOG_DIR = Path(os.path.dirname(__file__)).parent / "catalog"
+config = load_config()
+catalog_config = config.get("catalog", {})
+CATALOG_FILES = {}
+for cat, filename in catalog_config.get("files", {}).items():
+    CATALOG_FILES[cat] = get_catalog_path(filename)
 
-CATALOG_FILES = {
-    "cameras": CATALOG_DIR / "cameras.json",
-    "nvr": CATALOG_DIR / "nvr.json",
-    "poe_switches": CATALOG_DIR / "poe_switches.json",
-    "hdd": CATALOG_DIR / "hdd.json",
-    "analog_cameras": CATALOG_DIR / "analog_cameras.json",
-    "xvr": CATALOG_DIR / "xvr.json",
-    "psu": CATALOG_DIR / "psu.json",
-    "cables": CATALOG_DIR / "cables.json",
-    "wireless_cameras": CATALOG_DIR / "wireless_cameras.json",
-    "sd_cards": CATALOG_DIR / "sd_cards.json",
-    "hiview_accessories": CATALOG_DIR / "hiview_accessories.json",
-}
+HIVIEW_CATALOG_FILES = {}
+for cat, filename in catalog_config.get("hiview_files", {}).items():
+    HIVIEW_CATALOG_FILES[cat] = get_catalog_path(filename)
 
-HIVIEW_CATALOG_FILES = {
-    "cameras": CATALOG_DIR / "hiview_cameras.json",
-    "nvr": CATALOG_DIR / "hiview_nvr.json",
-}
+SEARCH_FIELDS = catalog_config.get("search_fields", ["nama", "brand"])
+PRICE_FIELDS = catalog_config.get("price_fields", {})
+HIDDEN_PRICE_FIELDS = catalog_config.get("hidden_price_fields", [])
+
+ALL_CATEGORIES = list(CATEGORY_DISPLAY for CATEGORY_DISPLAY in CATALOG_FILES)
 
 
 def _load_catalog(category: str) -> list[dict]:
@@ -47,10 +43,8 @@ async def lookup_products_fn(
     brand: str | None = None,
     keyword: str | None = None,
 ) -> dict:
-    """Search product catalog by category with optional brand and keyword filters."""
     category = category.lower().replace("-", "_")
     products = _load_catalog(category)
-
     hiview_products = _load_hiview_catalog(category)
 
     if not products and not hiview_products:
@@ -58,7 +52,7 @@ async def lookup_products_fn(
             "category": category,
             "count": 0,
             "products": [],
-            "note": f"Kategori '{category}' tidak ditemukan. Pilihan: cameras, nvr, poe_switches, hdd, analog_cameras, xvr, psu, cables, wireless_cameras, sd_cards, hiview_accessories",
+            "note": f"Kategori '{category}' tidak ditemukan. Pilihan: {', '.join(ALL_CATEGORIES)}",
         }
 
     products = products + hiview_products
@@ -73,9 +67,8 @@ async def lookup_products_fn(
     if keyword:
         kw = keyword.lower()
         filtered = []
-        search_fields = ["nama", "brand", "jenis", "tipe", "resolusi", "kapasitas_gb"]
         for p in products:
-            for field in search_fields:
+            for field in SEARCH_FIELDS:
                 val = p.get(field)
                 if val is not None and kw in str(val).lower():
                     filtered.append(p)
@@ -87,14 +80,16 @@ async def lookup_products_fn(
         products = filtered
 
     sanitized = []
+    msrp_key = PRICE_FIELDS.get("msrp")
+    estimate_key = PRICE_FIELDS.get("estimate")
     for p in products:
         entry = {}
         for k, v in p.items():
-            if k in ("harga_md", "harga_non_md", "harga_online"):
+            if k in HIDDEN_PRICE_FIELDS:
                 continue
-            if k == "harga_msrp":
+            if k == msrp_key:
                 entry["harga"] = v
-            elif k == "harga_estimasi":
+            elif k == estimate_key:
                 entry["harga"] = v
             else:
                 entry[k] = v
@@ -107,24 +102,27 @@ async def lookup_products_fn(
     }
 
 
+_business_name = config.get("business", {}).get("name", "Bisnis")
+_brands = config.get("brands", [])
+
 product_lookup_tool = Tool(
     name="product_lookup",
-    description="Cari produk CCTV dari katalog berdasarkan kategori, brand, dan kata kunci.",
+    description=f"Cari produk {_business_name} dari katalog berdasarkan kategori, brand, dan kata kunci.",
     input_schema={
         "type": "object",
         "properties": {
             "category": {
                 "type": "string",
-                "description": "Kategori produk: cameras, nvr, poe_switches, hdd, analog_cameras, xvr, psu, cables, wireless_cameras, sd_cards, hiview_accessories. Hasil mencakup harga MSRP (field: harga).",
-                "enum": ["cameras", "nvr", "poe_switches", "hdd", "analog_cameras", "xvr", "psu", "cables", "wireless_cameras", "sd_cards", "hiview_accessories"],
+                "description": f"Kategori produk: {', '.join(ALL_CATEGORIES)}. Hasil mencakup harga (field: harga).",
+                "enum": ALL_CATEGORIES,
             },
             "brand": {
                 "type": "string",
-                "description": "Filter berdasarkan brand. Contoh: Hikvision, Dahua, Uniview, Ezviz, TP-Link, Imou, Hiview, Bardi, Hilook. Boleh dikosongkan.",
+                "description": f"Filter berdasarkan brand. Contoh: {', '.join(_brands[:5])}. Boleh dikosongkan.",
             },
             "keyword": {
                 "type": "string",
-                "description": "Kata kunci pencarian tambahan. Misal: '4MP', 'bullet', '1080P', '8 channel'. Mencocokkan nama, brand, fitur, jenis, dan tipe produk.",
+                "description": "Kata kunci pencarian tambahan. Mencocokkan nama, brand, fitur, jenis, dan tipe produk.",
             },
         },
         "required": ["category"],

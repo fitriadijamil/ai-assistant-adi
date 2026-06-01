@@ -1,5 +1,8 @@
+"use client";
+
 import { ReactNode } from "react";
 import { LetterInfo } from "@/lib/api";
+import { useBusinessConfig } from "@/lib/useBusinessConfig";
 
 interface SuratPenawaranProps {
   letterInfo: LetterInfo;
@@ -11,7 +14,15 @@ function formatPrice(val: number): string {
 }
 
 export default function SuratPenawaran({ letterInfo, children }: SuratPenawaranProps) {
+  const { config, loading } = useBusinessConfig();
   const { letter_number, date, customer_address, client_name, project_type, camera_count_indoor, camera_count_outdoor, grand_total } = letterInfo;
+
+  if (loading || !config) {
+    return <div className="p-4 text-base-content/60">Loading...</div>;
+  }
+
+  const { contact, proposal, bank_account, surat_penawaran: spConfig } = config;
+  const terms = proposal.terms || [];
 
   return (
     <div className="surat-wrapper mb-6">
@@ -105,13 +116,15 @@ export default function SuratPenawaran({ letterInfo, children }: SuratPenawaranP
 
       <div className="kop">
         <div className="kop-logo">
-          <img src="/logo.webp" alt="adicctv.com" className="kop-img" />
+          {spConfig.show_logo && (
+            <img src="/logo.webp" alt={contact.website} className="kop-img" />
+          )}
         </div>
         <div className="info">
-          <div className="info-title">adicctv.com</div>
-          <div>Alamat : Kp. Bojong RT.005/026 Bakti Jaya Sukmajaya Depok 16418</div>
-          <div>Email : fitriadijamil@gmail.com</div>
-          <div>Tlp/WA : 0851 5604 4200</div>
+          <div className="info-title">{contact.website?.replace("https://", "")}</div>
+          <div>Alamat : {contact.address}</div>
+          <div>Email : {contact.email}</div>
+          <div>Tlp/WA : {contact.phone || contact.whatsapp}</div>
         </div>
       </div>
 
@@ -128,7 +141,7 @@ export default function SuratPenawaran({ letterInfo, children }: SuratPenawaranP
         </div>
 
         <div className="pembuka">
-          Bersama surat ini, kami dari adicctv.com mengajukan penawaran harga untuk pengadaan CCTV di {project_type} sebagai berikut:{camera_count_indoor > 0 || camera_count_outdoor > 0 ? ` (${camera_count_indoor} Indoor + ${camera_count_outdoor} Outdoor)` : ''}
+          Bersama surat ini, kami dari {contact.website?.replace("https://", "")} mengajukan penawaran harga untuk pengadaan CCTV di {project_type} sebagai berikut:{camera_count_indoor > 0 || camera_count_outdoor > 0 ? ` (${camera_count_indoor} Indoor + ${camera_count_outdoor} Outdoor)` : ''}
         </div>
 
         <div style={{ marginBottom: "6px" }}>
@@ -141,26 +154,32 @@ export default function SuratPenawaran({ letterInfo, children }: SuratPenawaranP
           <h3>Syarat &amp; Ketentuan:</h3>
           <table>
             <tbody>
-              <tr><td width="150">Pembayaran</td><td>: DP 70%, setelah pekerjaan selesai 30%</td></tr>
-              <tr><td>Mulai Pekerjaan</td><td>: Maksimal 5 hari setelah DP diterima</td></tr>
-              <tr><td>Garansi Produk</td><td>: 1 tahun</td></tr>
-              <tr><td>Garansi Instalasi</td><td>: 1 bulan</td></tr>
-              <tr><td>Masa Berlaku</td><td>: 5 hari</td></tr>
-              <tr><td>Harga</td><td>: Sudah termasuk PPN 11%</td></tr>
-              <tr><td>Ongkos Kirim</td><td>: Sudah termasuk area Jabodetabek</td></tr>
+              {terms.map((term, i) => {
+                const [label, ...rest] = term.split(":");
+                return (
+                  <tr key={i}>
+                    <td width="150">{label}</td>
+                    <td>: {rest.join(":").trim()}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
 
-        <div style={{ marginTop: "8px", fontSize: "10pt", fontWeight: "bold", fontStyle: "italic" }}>
-          Pembayaran via transfer Bank BCA 6080473271 a.n. Fitriadi Jamil
-        </div>
+        {spConfig.show_bank_account && (
+          <div style={{ marginTop: "8px", fontSize: "10pt", fontWeight: "bold", fontStyle: "italic" }}>
+            {bank_account.label}
+          </div>
+        )}
 
-        <div className="ttd">
-          <div>Hormat kami,</div>
-          <div className="jarak" />
-          <div className="nama">Fitriadi Jamil</div>
-        </div>
+        {spConfig.show_ttd && (
+          <div className="ttd">
+            <div>Hormat kami,</div>
+            <div className="jarak" />
+            <div className="nama">{proposal.signatory}</div>
+          </div>
+        )}
       </div>
     </div>
   );

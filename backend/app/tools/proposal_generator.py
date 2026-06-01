@@ -1,44 +1,53 @@
 import json
 import logging
 import math
+import datetime
 
 import httpx
 
 from app.config import settings
+from app.config_loader import load_config
 from app.tools.storage_calculator import storage_calculator_fn
 from app.tools.bandwidth_calculator import bandwidth_calculator_fn
 from app.tools.product_lookup import lookup_products_fn
 
 logger = logging.getLogger(__name__)
 
-JASA_HARGA = {
-    "residential": 275000,
-    "office": 500000,
-    "warehouse": 525000,
-    "parking": 525000,
-    "school": 450000,
-    "factory": 525000,
-    "retail": 300000,
-    "hospital": 500000,
-}
+config = load_config()
+business = config.get("business", {})
+proposal_cfg = config.get("proposal", {})
+contact_cfg = config.get("contact", {})
+bank_cfg = config.get("bank_account", {})
+cable_cfg = config.get("cable_prices", {})
+project_types = config.get("project_types", [])
+system_types = config.get("system_types", [])
+sd_card_opts = config.get("sd_card_options", [])
+accessories_pct = config.get("accessories_percentage", 25)
+conduit_mult = config.get("conduit_multiplier", 1.5)
+
+_terms_raw = proposal_cfg.get("terms", [])
+_terms = [t.replace("{tax_label}", business.get("tax_label", "PPN")).replace("{tax_rate}", str(business.get("tax_rate", 11))) for t in _terms_raw]
+
+_business_name = business.get("name", "Bisnis")
+_business_url = contact_cfg.get("website", "")
+
+MONTH_ROMAN = {1:"I",2:"II",3:"III",4:"IV",5:"V",6:"VI",7:"VII",8:"VIII",9:"IX",10:"X",11:"XI",12:"XII"}
 
 
 def _get_jasa_harga(project_type: str) -> int:
     pt = project_type.lower()
-    if "rumah sakit" in pt or "klinik" in pt: return JASA_HARGA["hospital"]
-    if "residential" in pt or "rumah" in pt: return JASA_HARGA["residential"]
-    if "office" in pt or "kantor" in pt: return JASA_HARGA["office"]
-    if "warehouse" in pt or "gudang" in pt: return JASA_HARGA["warehouse"]
-    if "parking" in pt or "parkir" in pt: return JASA_HARGA["parking"]
-    if "school" in pt or "campus" in pt or "sekolah" in pt or "university" in pt: return JASA_HARGA["school"]
-    if "factory" in pt or "industrial" in pt or "pabrik" in pt: return JASA_HARGA["factory"]
-    if "retail" in pt or "store" in pt or "toko" in pt or "ruko" in pt: return JASA_HARGA["retail"]
-    if "gedung" in pt or "building" in pt: return JASA_HARGA["office"]
-    return JASA_HARGA["residential"]
+    for pt_config in project_types:
+        if pt_config.get("id", "").lower() == pt:
+            return pt_config.get("installation_fee", 275000)
+        for kw in pt_config.get("keywords", []):
+            if kw in pt:
+                return pt_config.get("installation_fee", 275000)
+    return 275000
 
-PROPOSAL_SYSTEM_PROMPT = """Anda adalah Adi, AI Assistant Proposal Writer untuk adicctv.com.
 
-Tugas Anda: tulis 1 kalimat (maks 15 kata) menjelaskan proyek CCTV (IP atau Analog) secara teknis.
+PROPOSAL_SYSTEM_PROMPT = f"""Anda adalah AI Assistant Proposal Writer untuk {_business_url}.
+
+Tugas Anda: tulis 1 kalimat (maks 15 kata) menjelaskan proyek secara teknis.
 
 JANGAN PERNAH menulis tabel BOM, header surat, nomor surat, tanggal, perihal, kepada yth, syarat & ketentuan, atau penutup. CUKUP tulis 1 paragraf saja.
 
@@ -118,7 +127,7 @@ async def generate_proposal(
             kategori_b.append(entry)
         return entry
 
-    # HDD lookup (moved before system branch to allow ordering HDD before cables)
+    # HDD lookup
     hdd_products = await lookup_products_fn(category="hdd")
     all_hdd = hdd_products.get("products") or []
     best_hdd = None
@@ -142,11 +151,18 @@ async def generate_proposal(
     if not best_hdd and all_hdd:
         best_hdd = all_hdd[0]
 
+    # Get relevant prices from config
+    utp_price = cable_cfg.get("utp", {}).get("price_per_meter", 7500)
+    power_price = cable_cfg.get("power", {}).get("price_per_meter", 17500)
+    coaxial_price = cable_cfg.get("coaxial", {}).get("price_per_meter", 5250)
+    conduit_price = cable_cfg.get("conduit", {}).get("price_per_unit", 12000)
+    conduit_m_per_unit = cable_cfg.get("conduit", {}).get("meter_per_unit", 2.8)
+    auto_utp_per_camera = cable_cfg.get("utp", {}).get("auto_per_camera", 30)
+
     is_analog = system_type == "analog"
     is_wireless = system_type == "wireless"
 
     if is_analog:
-        # --- ANALOG SYSTEM ---
         analog_cameras = await lookup_products_fn(category="analog_cameras")
         xvr_products = await lookup_products_fn(category="xvr")
         psu_products = await lookup_products_fn(category="psu")
@@ -163,7 +179,6 @@ async def generate_proposal(
             best_xvr = all_xvr[0]
         best_psu = (psu_products.get("products") or [None])[0]
 
-        # Find PSU with matching channel count
         if best_xvr:
             ch = best_xvr.get("channel", 0)
             if ch:
@@ -178,106 +193,58 @@ async def generate_proposal(
             camera_nama = best_camera.get('nama', 'CCTV')
             camera_res = best_camera.get('resolusi', '1080P')
             if camera_count_indoor > 0:
-                add_item(
-                    f"Kamera Analog Indoor {camera_nama} ({camera_res})",
-                    "Analog Camera",
-                    camera_count_indoor, "Unit", camera_price, "A"
-                )
+                add_item(f"Kamera Analog Indoor {camera_nama} ({camera_res})", "Analog Camera", camera_count_indoor, "Unit", camera_price, "A")
             if camera_count_outdoor > 0:
-                add_item(
-                    f"Kamera Analog Outdoor {camera_nama} ({camera_res})",
-                    "Analog Camera",
-                    camera_count_outdoor, "Unit", camera_price, "A"
-                )
+                add_item(f"Kamera Analog Outdoor {camera_nama} ({camera_res})", "Analog Camera", camera_count_outdoor, "Unit", camera_price, "A")
 
         if best_xvr:
             xvr_price = best_xvr.get("harga", 0) or 0
             ch = best_xvr.get("channel", 0)
-            add_item(
-                f"XVR {best_xvr.get('nama', '')} - {ch} Channel",
-                "XVR Recorder",
-                1, "Unit", xvr_price, "A"
-            )
+            add_item(f"XVR {best_xvr.get('nama', '')} - {ch} Channel", "XVR Recorder", 1, "Unit", xvr_price, "A")
 
         if best_psu:
             psu_price = best_psu.get("harga", 0) or 0
             psu_ch = best_psu.get("channel_count", 0)
-            add_item(
-                f"Power Supply {psu_ch} Channel",
-                "Power Supply",
-                1, "Unit", psu_price, "A"
-            )
+            add_item(f"Power Supply {psu_ch} Channel", "Power Supply", 1, "Unit", psu_price, "A")
 
         if best_hdd:
             hdd_price = best_hdd.get("harga", 0) or 0
             hdd_cap = best_hdd.get("kapasitas_tb", 8)
-            add_item(
-                f"HDD {best_hdd.get('nama', 'Surveillance HDD')} - {hdd_cap}TB",
-                "Storage",
-                hdd_count, "Unit", hdd_price, "A"
-            )
+            add_item(f"HDD {best_hdd.get('nama', 'Surveillance HDD')} - {hdd_cap}TB", "Storage", hdd_count, "Unit", hdd_price, "A")
 
-        cable_meter = total_cameras * 30
+        cable_meter = total_cameras * auto_utp_per_camera
         if kabel_utp_qty and kabel_utp_qty > 0:
             cable_meter = kabel_utp_qty
 
         kabel_power_total_m = kabel_power_qty if kabel_power_qty and kabel_power_qty > 0 else 0
         kabel_coaxial_total_m = kabel_coaxial_qty if kabel_coaxial_qty and kabel_coaxial_qty > 0 else 0
         total_kabel_m = cable_meter + kabel_power_total_m + kabel_coaxial_total_m
-        pipa_qty = math.ceil(total_kabel_m / 2.8) if use_pipa else 0
+        pipa_qty = math.ceil(total_kabel_m / conduit_m_per_unit) if use_pipa else 0
 
         jasa_base = _get_jasa_harga(project_type)
-        jasa_harga = jasa_base if not use_pipa or pipa_qty == 0 else jasa_base * 3 // 2
+        jasa_harga = jasa_base if not use_pipa or pipa_qty == 0 else int(jasa_base * conduit_mult)
 
-        add_item(
-            "Jasa Instalasi Kamera",
-            "Lokal",
-            total_cameras, "Titik", jasa_harga, "B"
-        )
-
-        add_item(
-            "Kabel UTP Cat6",
-            "Lokal",
-            cable_meter, "M", 7500, "B"
-        )
+        add_item("Jasa Instalasi Kamera", "Lokal", total_cameras, "Titik", jasa_harga, "B")
+        add_item("Kabel UTP Cat6", "Lokal", cable_meter, "M", utp_price, "B")
 
         if kabel_coaxial_total_m > 0:
-            add_item(
-                "Kabel Coaxial RG59",
-                "Lokal",
-                kabel_coaxial_total_m, "M", 5250, "B"
-            )
-
+            add_item("Kabel Coaxial RG59", "Lokal", kabel_coaxial_total_m, "M", coaxial_price, "B")
         if kabel_power_total_m > 0:
-            add_item(
-                "Kabel Power",
-                "Lokal",
-                kabel_power_total_m, "M", 17500, "B"
-            )
-
+            add_item("Kabel Power", "Lokal", kabel_power_total_m, "M", power_price, "B")
         if pipa_qty > 0:
-            add_item(
-                "Conduit",
-                "Lokal",
-                pipa_qty, "Btg", 12000, "B"
-            )
+            add_item("Conduit", "Lokal", pipa_qty, "Btg", conduit_price, "B")
 
         dasar_aksesoris = (
             (total_cameras * jasa_harga)
-            + (cable_meter * 7500)
-            + (kabel_coaxial_total_m * 5250)
-            + (kabel_power_total_m * 17500)
-            + (pipa_qty * 12000)
+            + (cable_meter * utp_price)
+            + (kabel_coaxial_total_m * coaxial_price)
+            + (kabel_power_total_m * power_price)
+            + (pipa_qty * conduit_price)
         )
-        aksesoris_harga = math.ceil(dasar_aksesoris * 0.25)
-        add_item(
-            "Aksesoris Instalasi (RJ45, Sock, Clamp, Flexible, Duct, Ties, Isolasi)",
-            "Lokal",
-            1, "Lot", aksesoris_harga, "B"
-        )
+        aksesoris_harga = math.ceil(dasar_aksesoris * accessories_pct / 100)
+        add_item("Aksesoris Instalasi (RJ45, Sock, Clamp, Flexible, Duct, Ties, Isolasi)", "Lokal", 1, "Lot", aksesoris_harga, "B")
 
     elif is_wireless:
-        # --- WIRELESS SYSTEM ---
         wireless_products = await lookup_products_fn(category="wireless_cameras", keyword=resolution)
         best_camera = (wireless_products.get("products") or [None])[0]
 
@@ -287,73 +254,39 @@ async def generate_proposal(
             camera_res = best_camera.get('resolusi', resolution)
             camera_jenis = best_camera.get('jenis', '')
             if camera_count_indoor > 0:
-                add_item(
-                    f"Kamera WiFi Indoor {camera_nama} - {camera_res} ({camera_jenis})",
-                    "Wireless Camera",
-                    camera_count_indoor, "Unit", camera_price, "A"
-                )
+                add_item(f"Kamera WiFi Indoor {camera_nama} - {camera_res} ({camera_jenis})", "Wireless Camera", camera_count_indoor, "Unit", camera_price, "A")
             if camera_count_outdoor > 0:
-                add_item(
-                    f"Kamera WiFi Outdoor {camera_nama} - {camera_res} ({camera_jenis})",
-                    "Wireless Camera",
-                    camera_count_outdoor, "Unit", camera_price, "A"
-                )
+                add_item(f"Kamera WiFi Outdoor {camera_nama} - {camera_res} ({camera_jenis})", "Wireless Camera", camera_count_outdoor, "Unit", camera_price, "A")
 
-        # SD Card (1 per camera, Kategori A)
         if sd_card_size:
             sd_products = await lookup_products_fn(category="sd_cards", keyword=sd_card_size)
             best_sd = (sd_products.get("products") or [None])[0]
             if best_sd:
                 sd_price = best_sd.get("harga", 0) or 0
-                add_item(
-                    f"Micro SD {sd_card_size}",
-                    "Storage",
-                    total_cameras, "Unit", sd_price, "A"
-                )
-
-        # Skip NVR (cloud/SD card)
-        # Skip PoE Switch (WiFi direct)
+                add_item(f"Micro SD {sd_card_size}", "Storage", total_cameras, "Unit", sd_price, "A")
 
         kabel_power_total_m = kabel_power_qty if kabel_power_qty and kabel_power_qty > 0 else 0
-        pipa_qty = math.ceil(kabel_power_total_m / 2.8) if use_pipa and kabel_power_total_m > 0 else 0
+        pipa_qty = math.ceil(kabel_power_total_m / conduit_m_per_unit) if use_pipa and kabel_power_total_m > 0 else 0
 
         jasa_base = _get_jasa_harga(project_type)
-        jasa_harga = jasa_base if not use_pipa or pipa_qty == 0 else jasa_base * 3 // 2
+        jasa_harga = jasa_base if not use_pipa or pipa_qty == 0 else int(jasa_base * conduit_mult)
 
-        add_item(
-            "Jasa Instalasi Kamera",
-            "Lokal",
-            total_cameras, "Titik", jasa_harga, "B"
-        )
-
+        add_item("Jasa Instalasi Kamera", "Lokal", total_cameras, "Titik", jasa_harga, "B")
         if kabel_power_total_m > 0:
-            add_item(
-                "Kabel Power",
-                "Lokal",
-                kabel_power_total_m, "M", 17500, "B"
-            )
-
+            add_item("Kabel Power", "Lokal", kabel_power_total_m, "M", power_price, "B")
         if pipa_qty > 0:
-            add_item(
-                "Conduit",
-                "Lokal",
-                pipa_qty, "Btg", 12000, "B"
-            )
+            add_item("Conduit", "Lokal", pipa_qty, "Btg", conduit_price, "B")
 
         dasar_aksesoris = (
             (total_cameras * jasa_harga)
-            + (kabel_power_total_m * 17500)
-            + (pipa_qty * 12000)
+            + (kabel_power_total_m * power_price)
+            + (pipa_qty * conduit_price)
         )
-        aksesoris_harga = math.ceil(dasar_aksesoris * 0.25)
-        add_item(
-            "Aksesoris Instalasi (RJ45, Sock, Clamp, Flexible, Duct, Ties, Isolasi)",
-            "Lokal",
-            1, "Lot", aksesoris_harga, "B"
-        )
+        aksesoris_harga = math.ceil(dasar_aksesoris * accessories_pct / 100)
+        add_item("Aksesoris Instalasi (RJ45, Sock, Clamp, Flexible, Duct, Ties, Isolasi)", "Lokal", 1, "Lot", aksesoris_harga, "B")
 
     else:
-        # --- IP SYSTEM (existing) ---
+        # IP SYSTEM
         camera_products = await lookup_products_fn(category="cameras", keyword=resolution, brand=brand or None)
         nvr_products = await lookup_products_fn(category="nvr", brand="Hiview")
         poe_products = await lookup_products_fn(category="poe_switches")
@@ -378,103 +311,55 @@ async def generate_proposal(
             camera_res = best_camera.get('resolusi', resolution)
             camera_jenis = best_camera.get('jenis', '')
             if camera_count_indoor > 0:
-                add_item(
-                    f"Kamera Indoor {camera_nama} - {camera_res} ({camera_jenis})",
-                    "IP Camera",
-                    camera_count_indoor, "Unit", camera_price, "A"
-                )
+                add_item(f"Kamera Indoor {camera_nama} - {camera_res} ({camera_jenis})", "IP Camera", camera_count_indoor, "Unit", camera_price, "A")
             if camera_count_outdoor > 0:
-                add_item(
-                    f"Kamera Outdoor {camera_nama} - {camera_res} ({camera_jenis})",
-                    "IP Camera",
-                    camera_count_outdoor, "Unit", camera_price, "A"
-                )
+                add_item(f"Kamera Outdoor {camera_nama} - {camera_res} ({camera_jenis})", "IP Camera", camera_count_outdoor, "Unit", camera_price, "A")
 
         if best_nvr:
             nvr_price = best_nvr.get("harga", 0) or best_nvr.get("harga_estimasi", 0) or 0
             ch = best_nvr.get("channel", 0)
-            add_item(
-                f"NVR {best_nvr.get('nama', '')} - {ch} Channel",
-                "NVR Recorder",
-                1, "Unit", nvr_price, "A"
-            )
+            add_item(f"NVR {best_nvr.get('nama', '')} - {ch} Channel", "NVR Recorder", 1, "Unit", nvr_price, "A")
 
         if best_poe:
             poe_price = best_poe.get("harga", 0) or best_poe.get("harga_estimasi", 0) or 0
-            add_item(
-                f"PoE Switch {best_poe.get('nama', '')} - {best_poe.get('port', '?')} Port",
-                "Switch",
-                1, "Unit", poe_price, "A"
-            )
+            add_item(f"PoE Switch {best_poe.get('nama', '')} - {best_poe.get('port', '?')} Port", "Switch", 1, "Unit", poe_price, "A")
 
         if best_hdd:
             hdd_price = best_hdd.get("harga", 0) or 0
             hdd_cap = best_hdd.get("kapasitas_tb", 8)
-            add_item(
-                f"HDD {best_hdd.get('nama', 'Surveillance HDD')} - {hdd_cap}TB",
-                "Storage",
-                hdd_count, "Unit", hdd_price, "A"
-            )
+            add_item(f"HDD {best_hdd.get('nama', 'Surveillance HDD')} - {hdd_cap}TB", "Storage", hdd_count, "Unit", hdd_price, "A")
 
-        # Calculate materials first
-        cable_meter = total_cameras * 30
+        cable_meter = total_cameras * auto_utp_per_camera
         if kabel_utp_qty and kabel_utp_qty > 0:
             cable_meter = kabel_utp_qty
 
         kabel_power_total_m = kabel_power_qty if kabel_power_qty and kabel_power_qty > 0 else 0
         kabel_coaxial_total_m = kabel_coaxial_qty if kabel_coaxial_qty and kabel_coaxial_qty > 0 else 0
         total_kabel_m = cable_meter + kabel_power_total_m + kabel_coaxial_total_m
-        pipa_qty = math.ceil(total_kabel_m / 2.8) if use_pipa else 0
+        pipa_qty = math.ceil(total_kabel_m / conduit_m_per_unit) if use_pipa else 0
 
         jasa_base = _get_jasa_harga(project_type)
-        jasa_harga = jasa_base if not use_pipa or pipa_qty == 0 else jasa_base * 3 // 2
+        jasa_harga = jasa_base if not use_pipa or pipa_qty == 0 else int(jasa_base * conduit_mult)
 
-        add_item(
-            "Jasa Instalasi Kamera",
-            "Lokal",
-            total_cameras, "Titik", jasa_harga, "B"
-        )
-
-        add_item(
-            f"Kabel UTP Cat6" + (f" {best_utp.get('tipe', '')}" if best_utp else ""),
-            "Lokal",
-            cable_meter, "M", 7500, "B"
-        )
+        add_item("Jasa Instalasi Kamera", "Lokal", total_cameras, "Titik", jasa_harga, "B")
+        add_item(f"Kabel UTP Cat6" + (f" {best_utp.get('tipe', '')}" if best_utp else ""), "Lokal", cable_meter, "M", utp_price, "B")
 
         if kabel_coaxial_total_m > 0:
-            add_item(
-                "Kabel Coaxial RG59",
-                "Lokal",
-                kabel_coaxial_total_m, "M", 5250, "B"
-            )
-
+            add_item("Kabel Coaxial RG59", "Lokal", kabel_coaxial_total_m, "M", coaxial_price, "B")
         if kabel_power_total_m > 0:
-            add_item(
-                "Kabel Power",
-                "Lokal",
-                kabel_power_total_m, "M", 17500, "B"
-            )
-
+            add_item("Kabel Power", "Lokal", kabel_power_total_m, "M", power_price, "B")
         if pipa_qty > 0:
-            add_item(
-                "Conduit",
-                "Lokal",
-                pipa_qty, "Btg", 12000, "B"
-            )
+            add_item("Conduit", "Lokal", pipa_qty, "Btg", conduit_price, "B")
 
         dasar_aksesoris = (
             (total_cameras * jasa_harga)
-            + (cable_meter * 7500)
-            + (kabel_coaxial_total_m * 5250)
-            + (kabel_power_total_m * 17500)
-            + (pipa_qty * 12000)
+            + (cable_meter * utp_price)
+            + (kabel_coaxial_total_m * coaxial_price)
+            + (kabel_power_total_m * power_price)
+            + (pipa_qty * conduit_price)
         )
-        aksesoris_harga = math.ceil(dasar_aksesoris * 0.25)
-        add_item(
-            "Aksesoris Instalasi (RJ45, Sock, Clamp, Flexible, Duct, Ties, Isolasi)",
-            "Lokal",
-            1, "Lot", aksesoris_harga, "B"
-        )
+        aksesoris_harga = math.ceil(dasar_aksesoris * accessories_pct / 100)
+        add_item("Aksesoris Instalasi (RJ45, Sock, Clamp, Flexible, Duct, Ties, Isolasi)", "Lokal", 1, "Lot", aksesoris_harga, "B")
 
     total_a = sum(i["total"] for i in kategori_a)
     total_b = sum(i["total"] for i in kategori_b)
@@ -482,11 +367,11 @@ async def generate_proposal(
 
     bom_data = {"kategori_a": kategori_a, "kategori_b": kategori_b, "total_a": total_a, "total_b": total_b, "grand_total": total_bom}
 
-    import datetime
     today = datetime.date.today()
-    month_roman = {1:"I",2:"II",3:"III",4:"IV",5:"V",6:"VI",7:"VII",8:"VIII",9:"IX",10:"X",11:"XI",12:"XII"}
-    bulan_romawi = month_roman[today.month]
-    letter_number = f"001/SPH-ASS/{bulan_romawi}/{today.year}"
+    bulan_romawi = MONTH_ROMAN[today.month]
+    letter_prefix = proposal_cfg.get("letter_number_prefix", "001/SPH/")
+    letter_suffix = proposal_cfg.get("letter_number_suffix", "/{YEAR}").replace("{YEAR}", str(today.year))
+    letter_number = f"{letter_prefix}{bulan_romawi}{letter_suffix}"
 
     letter_info = {
         "letter_number": letter_number,
@@ -498,6 +383,11 @@ async def generate_proposal(
         "camera_count_indoor": camera_count_indoor,
         "camera_count_outdoor": camera_count_outdoor,
         "grand_total": total_bom,
+        "_business_name": _business_name,
+        "_business_url": _business_url,
+        "_contact_wa": contact_cfg.get("whatsapp", ""),
+        "_terms": _terms,
+        "_bank": bank_cfg,
     }
 
     user_prompt = f"""Tulis 1 paragraf pengantar teknis dan <!--BOM--> untuk surat penawaran:

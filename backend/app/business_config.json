@@ -1,0 +1,199 @@
+{
+  "business": {
+    "name": "Adi CCTV",
+    "tagline": "Ahlinya Pasang & Service CCTV Se-Indonesia",
+    "ai_name": "Adi",
+    "ai_role": "senior pre-sales engineer CCTV & security system",
+    "currency": "IDR",
+    "tax_rate": 11,
+    "tax_label": "PPN"
+  },
+  "contact": {
+    "whatsapp": "6285156044200",
+    "website": "https://adicctv.com",
+    "email": "fitriadijamil@gmail.com",
+    "phone": "0851 5604 4200",
+    "address": "Kp. Bojong RT.005/026 Bakti Jaya Sukmajaya Depok 16418"
+  },
+  "bank_account": {
+    "bank": "BCA",
+    "number": "6080473271",
+    "name": "Fitriadi Jamil",
+    "label": "Pembayaran via transfer Bank BCA 6080473271 a.n. Fitriadi Jamil"
+  },
+  "brands": [
+    "Hikvision", "Dahua", "Uniview", "Ezviz", "Hiview",
+    "Bardi", "TP-Link Tapo", "Imou", "Hilook"
+  ],
+  "catalog": {
+    "files": {
+      "cameras": "cameras.json",
+      "nvr": "nvr.json",
+      "poe_switches": "poe_switches.json",
+      "hdd": "hdd.json",
+      "analog_cameras": "analog_cameras.json",
+      "xvr": "xvr.json",
+      "psu": "psu.json",
+      "cables": "cables.json",
+      "wireless_cameras": "wireless_cameras.json",
+      "sd_cards": "sd_cards.json",
+      "hiview_accessories": "hiview_accessories.json"
+    },
+    "hiview_files": {
+      "cameras": "hiview_cameras.json",
+      "nvr": "hiview_nvr.json"
+    },
+    "search_fields": ["nama", "brand", "jenis", "tipe", "resolusi", "kapasitas_gb"],
+    "price_fields": {
+      "msrp": "harga_msrp",
+      "estimate": "harga_estimasi"
+    },
+    "hidden_price_fields": ["harga_md", "harga_non_md", "harga_online"]
+  },
+  "proposal": {
+    "letter_number_prefix": "001/SPH-ASS/",
+    "letter_number_suffix": "/{YEAR}",
+    "company_city": "Jakarta",
+    "signatory": "Fitriadi Jamil",
+    "signatory_title": "Direktur",
+    "terms": [
+      "Pembayaran: DP 70% dari nilai kontrak, pelunasan 30% setelah pekerjaan selesai",
+      "Mulai Pekerjaan: Maksimal 5 hari setelah DP diterima",
+      "Garansi Produk: 1 tahun",
+      "Garansi Instalasi: 1 bulan",
+      "Masa Berlaku Penawaran: 5 hari",
+      "Harga sudah termasuk {tax_label} {tax_rate}%",
+      "Ongkos kirim sudah termasuk area Jabodetabek"
+    ]
+  },
+  "project_types": [
+    {
+      "id": "residential",
+      "label": "Rumah Tinggal",
+      "keywords": ["residential", "rumah", "perumahan"],
+      "installation_fee": 275000
+    },
+    {
+      "id": "office",
+      "label": "Kantor",
+      "keywords": ["office", "kantor", "ruko"],
+      "installation_fee": 500000
+    },
+    {
+      "id": "warehouse",
+      "label": "Gudang",
+      "keywords": ["warehouse", "gudang", "logistic", "logistik"],
+      "installation_fee": 525000
+    },
+    {
+      "id": "factory",
+      "label": "Pabrik",
+      "keywords": ["factory", "pabrik", "industri"],
+      "installation_fee": 525000
+    },
+    {
+      "id": "hospital",
+      "label": "Rumah Sakit / Klinik",
+      "keywords": ["hospital", "klinik", "rumah sakit", "rs"],
+      "installation_fee": 500000
+    },
+    {
+      "id": "school",
+      "label": "Sekolah",
+      "keywords": ["school", "sekolah"],
+      "installation_fee": 450000
+    },
+    {
+      "id": "parking",
+      "label": "Parkir",
+      "keywords": ["parking", "parkir"],
+      "installation_fee": 525000
+    },
+    {
+      "id": "retail",
+      "label": "Toko / Retail",
+      "keywords": ["retail", "toko", "ruko"],
+      "installation_fee": 300000
+    },
+    {
+      "id": "building",
+      "label": "Gedung",
+      "keywords": ["gedung", "building", "apartemen"],
+      "installation_fee": 500000
+    }
+  ],
+  "system_types": [
+    {
+      "id": "ip",
+      "label": "IP (NVR + PoE)",
+      "has_hdd": true,
+      "has_nvr": true,
+      "has_poe_switch": true,
+      "has_utp_cable": true,
+      "has_coaxial_cable": false,
+      "has_power_cable": true,
+      "has_sd_card": false,
+      "catalog_camera_type": "cameras"
+    },
+    {
+      "id": "analog",
+      "label": "Analog (XVR + Coaxial)",
+      "has_hdd": true,
+      "has_nvr": false,
+      "has_poe_switch": false,
+      "has_utp_cable": false,
+      "has_coaxial_cable": true,
+      "has_power_cable": true,
+      "has_sd_card": false,
+      "catalog_camera_type": "analog_cameras"
+    },
+    {
+      "id": "wireless",
+      "label": "Wireless (WiFi Camera)",
+      "has_hdd": false,
+      "has_nvr": false,
+      "has_poe_switch": false,
+      "has_utp_cable": false,
+      "has_coaxial_cable": false,
+      "has_power_cable": true,
+      "has_sd_card": true,
+      "catalog_camera_type": "wireless_cameras"
+    }
+  ],
+  "cable_prices": {
+    "utp": { "label": "Kabel UTP Cat6", "price_per_meter": 7500, "auto_per_camera": 30 },
+    "power": { "label": "Kabel Power", "price_per_meter": 17500 },
+    "coaxial": { "label": "Kabel Coaxial RG59", "price_per_meter": 5250 },
+    "conduit": { "label": "Pipa Conduit", "price_per_unit": 12000, "meter_per_unit": 2.8 }
+  },
+  "accessories_percentage": 25,
+  "conduit_multiplier": 1.5,
+  "resolutions": ["2MP", "3MP", "4MP", "5MP", "8MP"],
+  "sd_card_options": [
+    { "size_gb": 0, "label": "Tanpa SD Card", "price": 0 },
+    { "size_gb": 32, "label": "32GB - Rp155k", "price": 155000 },
+    { "size_gb": 64, "label": "64GB - Rp195k", "price": 195000 },
+    { "size_gb": 128, "label": "128GB - Rp250k", "price": 250000 },
+    { "size_gb": 256, "label": "256GB - Rp688k", "price": 688000 }
+  ],
+  "tools": {
+    "enabled": ["storage_calculator", "bandwidth_calculator", "product_lookup", "proposal_generator"],
+    "storage_calculator": {
+      "bitrate_table": {
+        "2MP": 1700000,
+        "3MP": 2550000,
+        "4MP": 3400000,
+        "5MP": 4250000,
+        "8MP": 6800000,
+        "12MP": 10200000
+      },
+      "codec": "H.265",
+      "fps": 30
+    }
+  },
+  "surat_penawaran": {
+    "show_logo": true,
+    "show_bank_account": true,
+    "show_ttd": true
+  }
+}
