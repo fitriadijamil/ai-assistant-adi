@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     openrouter_api_key: str = ""
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
-    openrouter_model: str = "google/gemini-2.0-flash-001"
+    openrouter_model: str = "google/gemini-2.5-flash"
     database_url: str = "sqlite:///./adi.db"
     cors_origins: list[str] = ["http://localhost:3000"]
 
