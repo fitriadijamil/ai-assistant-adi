@@ -1,6 +1,7 @@
 import json
 import logging
 import math
+import re
 import datetime
 
 import httpx
@@ -390,7 +391,7 @@ async def generate_proposal(
         "_bank": bank_cfg,
     }
 
-    user_prompt = f"""Tulis 1 paragraf pengantar teknis dan <!--BOM--> untuk surat penawaran:
+    user_prompt = f"""Tulis 1 paragraf pengantar teknis untuk surat penawaran:
 
 DATA KLIEN:
 - Nama: {client_name}
@@ -437,6 +438,9 @@ TUGAS:
             resp.raise_for_status()
             data = resp.json()
             content = data["choices"][0]["message"]["content"] or ""
+
+            content = re.sub(r'\|[^\n]+\|[^\n]*(\n\|[-:| ]+\|)?', '', content)
+            content = re.sub(r'\n{3,}', '\n\n', content.strip())
 
             content = content.strip() + "\n\n<!--BOM-->"
 
