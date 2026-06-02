@@ -38,6 +38,7 @@ async def chat_with_tools(messages: list[dict]) -> dict:
         "model": settings.openrouter_model,
         "messages": full_messages,
         "tools": tools if tools else None,
+        "max_tokens": settings.openrouter_max_tokens,
     }
 
     try:
@@ -111,6 +112,7 @@ async def _handle_tool_calls(
     payload = {
         "model": settings.openrouter_model,
         "messages": full_messages,
+        "max_tokens": settings.openrouter_max_tokens,
     }
 
     resp2 = await client.post(

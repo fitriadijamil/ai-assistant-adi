@@ -10,7 +10,7 @@ services:
       - key: OPENROUTER_API_KEY
         sync: false
       - key: OPENROUTER_MODEL
-        value: google/gemini-2.5-flash
+        value: openrouter/free
       - key: DATABASE_URL
         value: sqlite:///./adi.db
       - key: CORS_ORIGINS
