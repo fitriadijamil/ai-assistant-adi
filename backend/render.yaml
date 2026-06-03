@@ -10,7 +10,7 @@ services:
       - key: OPENROUTER_API_KEY
         sync: false
       - key: OPENROUTER_MODEL
-        value: openrouter/free
+        value: nvidia/nemotron-3-super-120b-a12b:free
       - key: DATABASE_URL
         value: sqlite:///./adi.db
       - key: CORS_ORIGINS
