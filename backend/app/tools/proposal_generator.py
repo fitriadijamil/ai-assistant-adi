@@ -11,6 +11,7 @@ from app.config_loader import load_config
 from app.tools.storage_calculator import storage_calculator_fn
 from app.tools.bandwidth_calculator import bandwidth_calculator_fn
 from app.tools.product_lookup import lookup_products_fn
+from app.tools.registry import Tool, registry
 
 logger = logging.getLogger(__name__)
 
