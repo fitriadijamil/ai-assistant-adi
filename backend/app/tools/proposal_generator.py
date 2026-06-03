@@ -479,3 +479,78 @@ TUGAS:
             "bom_data": None,
             "letter_info": None,
         }
+
+
+async def proposal_generator_chat_tool(
+    client_name: str,
+    project_type: str,
+    camera_count_indoor: int = 2,
+    camera_count_outdoor: int = 2,
+    resolution: str = "4MP",
+    system_type: str = "ip",
+    location: str = "",
+) -> dict:
+    """Simplified proposal generator for chat — returns summary + total."""
+    result = await generate_proposal(
+        client_name=client_name,
+        project_type=project_type,
+        location=location,
+        camera_count_indoor=camera_count_indoor,
+        camera_count_outdoor=camera_count_outdoor,
+        resolution=resolution,
+        system_type=system_type,
+    )
+    if result.get("bom_data") and result.get("letter_info"):
+        total = result["bom_data"]["grand_total"]
+        letter = result["letter_info"]
+        return {
+            "summary": f"Proposal untuk {client_name} ({project_type}): Total Rp {total:,}".replace(",", "."),
+            "grand_total": total,
+            "letter_number": letter["letter_number"],
+            "camera_count": camera_count_indoor + camera_count_outdoor,
+            "storage_tb": result["storage_summary"]["recommended_hdd_tb"],
+        }
+    return {"error": "Gagal membuat proposal", "detail": result.get("proposal_markdown", "")}
+
+
+proposal_generator_tool = Tool(
+    name="proposal_generator",
+    description="Generate a price proposal / surat penawaran for a CCTV project. Call this when user asks to create a proposal, surat penawaran, or price quote.",
+    input_schema={
+        "type": "object",
+        "properties": {
+            "client_name": {
+                "type": "string",
+                "description": "Nama klien / perusahaan",
+            },
+            "project_type": {
+                "type": "string",
+                "description": "Tipe proyek: rumah, kantor, gudang, pabrik, sekolah, parkir, toko, gedung, rs",
+            },
+            "camera_count_indoor": {
+                "type": "integer",
+                "description": "Jumlah kamera indoor (default 2)",
+            },
+            "camera_count_outdoor": {
+                "type": "integer",
+                "description": "Jumlah kamera outdoor (default 2)",
+            },
+            "resolution": {
+                "type": "string",
+                "description": "Resolusi kamera: 2MP, 4MP, 8MP (default 4MP)",
+            },
+            "system_type": {
+                "type": "string",
+                "description": "Tipe sistem: ip, analog, wireless (default ip)",
+            },
+            "location": {
+                "type": "string",
+                "description": "Lokasi proyek (opsional)",
+            },
+        },
+        "required": ["client_name", "project_type"],
+    },
+    fn=proposal_generator_chat_tool,
+)
+
+registry.register(proposal_generator_tool)

@@ -10,6 +10,7 @@ from app.config import settings
 from app.tools import storage_calculator  # noqa: F401 — registers tools
 from app.tools import bandwidth_calculator  # noqa: F401 — registers tools
 from app.tools import product_lookup  # noqa: F401 — registers tools
+from app.tools import proposal_generator  # noqa: F401 — registers tools
 
 app = FastAPI(
     title="AI Assistant Adi",
