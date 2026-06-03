@@ -9,8 +9,10 @@ services:
     envVars:
       - key: OPENROUTER_API_KEY
         sync: false
+      - key: OPENROUTER_BASE_URL
+        value: https://integrate.api.nvidia.com/v1
       - key: OPENROUTER_MODEL
-        value: nvidia/nemotron-3-super-120b-a12b:free
+        value: qwen/qwen3-coder-480b-a35b-instruct
       - key: DATABASE_URL
         value: sqlite:///./adi.db
       - key: CORS_ORIGINS
