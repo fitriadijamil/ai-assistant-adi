@@ -116,3 +116,39 @@ async def bandwidth_calculator(
 @router.get("/config")
 async def get_config():
     return load_config()
+
+
+@router.post("/debug/nvidia-test")
+async def debug_nvidia_test():
+    import httpx
+    from app.config import settings
+
+    headers = {
+        "Authorization": f"Bearer {settings.openrouter_api_key}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": settings.openrouter_model,
+        "messages": [{"role": "user", "content": "test"}],
+        "max_tokens": 10,
+    }
+    url = f"{settings.openrouter_base_url}/chat/completions"
+
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            t0 = __import__("time").time()
+            resp = await client.post(url, headers=headers, json=payload)
+            elapsed = __import__("time").time() - t0
+            return {
+                "url": url,
+                "model": settings.openrouter_model,
+                "status": resp.status_code,
+                "elapsed_sec": round(elapsed, 2),
+                "response_text": resp.text[:500],
+            }
+    except Exception as e:
+        return {
+            "url": url,
+            "model": settings.openrouter_model,
+            "error": str(e),
+        }
