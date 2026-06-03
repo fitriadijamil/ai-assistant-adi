@@ -42,7 +42,7 @@ async def chat_with_tools(messages: list[dict]) -> dict:
     }
 
     try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=180.0) as client:
             resp = await client.post(
                 f"{settings.openrouter_base_url}/chat/completions",
                 headers=headers,
