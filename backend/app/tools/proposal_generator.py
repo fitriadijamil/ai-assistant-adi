@@ -247,8 +247,16 @@ async def generate_proposal(
         add_item("Aksesoris Instalasi (RJ45, Sock, Clamp, Flexible, Duct, Ties, Isolasi)", "Lokal", 1, "Lot", aksesoris_harga, "B")
 
     elif is_wireless:
-        wireless_products = await lookup_products_fn(category="wireless_cameras", keyword=resolution)
-        best_camera = (wireless_products.get("products") or [None])[0]
+        wireless_products = await lookup_products_fn(category="wireless_cameras")
+        all_wireless = wireless_products.get("products") or []
+
+        best_camera = None
+        for cam in all_wireless:
+            if cam.get("resolusi", "").upper() == resolution.upper():
+                best_camera = cam
+                break
+        if not best_camera and all_wireless:
+            best_camera = all_wireless[0]
 
         if best_camera:
             camera_price = best_camera.get("harga", 0) or 0

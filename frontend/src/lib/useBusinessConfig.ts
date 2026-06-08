@@ -43,6 +43,7 @@ export interface BusinessConfig {
   system_types: {
     id: string;
     label: string;
+    resolutions: string[];
     has_hdd: boolean;
     has_nvr: boolean;
     has_poe_switch: boolean;

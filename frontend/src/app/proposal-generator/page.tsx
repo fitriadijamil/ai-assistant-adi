@@ -86,6 +86,7 @@ export default function ProposalGeneratorPage() {
   const systemTypes = config?.system_types || [];
   const sdCardOptions = config?.sd_card_options || [];
   const selSystem = systemTypes.find((st) => st.id === systemType);
+  const currentResolutions = selSystem?.resolutions || resolutions;
 
   const businessName = config?.business?.name || "adicctv.com";
   const businessTagline = config?.business?.tagline || "Service & Instalasi Bergaransi";
@@ -188,8 +189,14 @@ export default function ProposalGeneratorPage() {
                   className="select select-bordered w-full"
                   value={systemType}
                   onChange={(e) => {
-                    setSystemType(e.target.value);
+                    const newType = e.target.value;
+                    setSystemType(newType);
                     setSdCardSize("");
+                    const newSys = systemTypes.find((st) => st.id === newType);
+                    const newRes = newSys?.resolutions || resolutions;
+                    if (newRes.length > 0 && !newRes.includes(resolution)) {
+                      setResolution(newRes[0]);
+                    }
                   }}
                 >
                   {systemTypes.map((st) => (
@@ -207,7 +214,7 @@ export default function ProposalGeneratorPage() {
                   value={resolution}
                   onChange={(e) => setResolution(e.target.value)}
                 >
-                  {resolutions.map((r) => (
+                  {currentResolutions.map((r) => (
                     <option key={r} value={r}>
                       {r}
                     </option>

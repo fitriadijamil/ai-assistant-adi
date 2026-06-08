@@ -126,6 +126,7 @@
     {
       "id": "ip",
       "label": "IP (NVR + PoE)",
+      "resolutions": ["2MP", "3MP", "4MP", "5MP", "8MP"],
       "has_hdd": true,
       "has_nvr": true,
       "has_poe_switch": true,
@@ -138,6 +139,7 @@
     {
       "id": "analog",
       "label": "Analog (XVR + Coaxial)",
+      "resolutions": ["2MP", "3MP", "4MP", "5MP"],
       "has_hdd": true,
       "has_nvr": false,
       "has_poe_switch": false,
@@ -150,6 +152,7 @@
     {
       "id": "wireless",
       "label": "Wireless (WiFi Camera)",
+      "resolutions": ["3MP", "4MP", "5MP"],
       "has_hdd": false,
       "has_nvr": false,
       "has_poe_switch": false,
