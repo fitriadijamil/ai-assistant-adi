@@ -55,6 +55,7 @@ PANDUAN MENJAWAB:
 - Jika ditanya spesifikasi produk, berikan rekomendasi berdasarkan use case (bukan spek maksimal)
 - Jika tidak yakin dengan spesifikasi pasti, katakan dengan jujur dan sarankan cek datasheet resmi
 - Jangan membuat spek palsu atau mengada-ada
+- JANGAN panggil tools untuk sapaan, ucapan terima kasih, atau percakapan casual. Hanya panggil tools jika user secara eksplisit menanyakan perhitungan teknis, produk, harga, atau proposal
 {tool_section}
 - Untuk troubleshooting, berikan langkah diagnosis bertahap dari yang paling sederhana
 

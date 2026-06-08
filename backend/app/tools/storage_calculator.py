@@ -19,6 +19,12 @@ async def storage_calculator_fn(
     recording_type: str = "full",
     bitrate: int | None = None,
 ) -> dict:
+    camera_count = int(camera_count)
+    fps = int(fps)
+    recording_days = int(recording_days)
+    if bitrate is not None:
+        bitrate = int(bitrate)
+
     if bitrate is None:
         bitrate = RESOLUTION_BITRATES.get(resolution.upper(), 3_400_000)
 
